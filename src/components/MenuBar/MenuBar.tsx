@@ -93,6 +93,7 @@ export default function MenuBar() {
       <Toolbar>
         {roomState === 'disconnected' ? (
           <form className={classes.form} onSubmit={handleSubmit}>
+       
             {!user?.displayName ? (
               <TextField
                 id="menu-name"
@@ -107,6 +108,15 @@ export default function MenuBar() {
                 {user.displayName}
               </Typography>
             )}
+                       <Button
+              type="submit"
+              color="primary"
+              variant="contained"
+              disabled={isConnecting || !name || !roomName || isFetching}
+            >
+              Join Room
+            </Button>
+         
             <TextField
               id="menu-room"
               label="Room"
@@ -115,14 +125,7 @@ export default function MenuBar() {
               onChange={handleRoomNameChange}
               margin="dense"
             />
-            <Button
-              type="submit"
-              color="primary"
-              variant="contained"
-              disabled={isConnecting || !name || !roomName || isFetching}
-            >
-              Join Room
-            </Button>
+         
             {(isConnecting || isFetching) && <CircularProgress className={classes.loadingSpinner} />}
           </form>
         ) : (
