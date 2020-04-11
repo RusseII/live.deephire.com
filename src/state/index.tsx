@@ -51,7 +51,7 @@ export default function AppStateProvider(props: React.PropsWithChildren<{}>) {
       ...contextValue,
       getToken: async (identity, roomName) => {
         const headers = new window.Headers();
-        const endpoint = process.env.REACT_APP_TOKEN_ENDPOINT || '/token';
+        const endpoint = 'https://http.deephire.com/v1/live_token' || '/token';
         const params = new window.URLSearchParams({ identity, roomName });
 
         return fetch(`${endpoint}?${params}`, { headers }).then(res => res.text());

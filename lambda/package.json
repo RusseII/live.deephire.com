@@ -1,0 +1,9 @@
+{
+    "scripts": {
+        "test": "node index.js",
+        "deploy": "yarn --prod && zip -r lambdaFunc.zip . && aws lambda update-function-code --function-name live-interviews-token-generator --region us-east-1 --zip-file fileb://./lambdaFunc.zip && rm -rf lambdaFunc.zip"
+    },
+    "dependencies": {
+        "twilio": "^3.42.0"
+    }
+}
