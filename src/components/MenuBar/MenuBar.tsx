@@ -122,14 +122,14 @@ export default function MenuBar() {
             )}
                   
          
-            <TextField
+            {/* <TextField
               id="menu-room"
               label="Room"
               className={classes.textField}
               value={roomName}
               onChange={handleRoomNameChange}
               margin="dense"
-            />
+            /> */}
             <Button
               className={classes.joinButton}
               type="submit"
@@ -142,7 +142,8 @@ export default function MenuBar() {
             {(isConnecting || isFetching) && <CircularProgress className={classes.loadingSpinner} />}
           </form>
         ) : (
-          <h3>{roomName}</h3>
+          null
+          // <h3>{roomName}</h3>
         )}
         <div className={classes.rightButtonContainer}>
           <LocalAudioLevelIndicator />
