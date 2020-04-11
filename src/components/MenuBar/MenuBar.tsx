@@ -120,14 +120,7 @@ export default function MenuBar() {
                 {user.displayName}
               </Typography>
             )}
-                       <Button
-              type="submit"
-              color="primary"
-              variant="contained"
-              disabled={isConnecting || !name || !roomName || isFetching}
-            >
-              Join Room
-            </Button>
+                  
          
             <TextField
               id="menu-room"

@@ -7,6 +7,7 @@
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
     "@primer/octicons-react": "^9.4.0",
+    "@sentry/browser": "^5.15.4",
     "@types/d3-timer": "^1.0.9",
     "@types/fscreen": "^1.0.1",
     "@types/jest": "^24.9.1",
@@ -76,7 +77,8 @@
     "cypress:open": "cypress open",
     "cypress:run": "cypress run --browser chrome",
     "cypress:ci": "cross-env CYPRESS_baseUrl=http://localhost:8081 start-server-and-test server http://localhost:8081 cypress:run",
-    "deploy:twilio-cli": "cross-env REACT_APP_SET_AUTH=passcode npm run build && twilio rtc:apps:video:deploy --authentication=passcode --app-directory ./build"
+    "deploy:twilio-cli": "cross-env REACT_APP_SET_AUTH=passcode npm run build && twilio rtc:apps:video:deploy --authentication=passcode --app-directory ./build",
+    "deploy:aws": "aws s3 sync --delete build/ s3://live.deephire.com && aws cloudfront create-invalidation --distribution-id E3FHHUZC9448VZ  --paths '/*'"
   },
   "eslintConfig": {
     "extends": "react-app",
