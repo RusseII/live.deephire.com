@@ -2,7 +2,8 @@
 const AccessToken = require('twilio').jwt.AccessToken;
 const VideoGrant = AccessToken.VideoGrant;
 
-const MAX_ALLOWED_SESSION_DURATION = 14400;
+const oneAndHalfHours = 5400
+const MAX_ALLOWED_SESSION_DURATION = oneAndHalfHours;
 const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
 const twilioApiKeySID = process.env.TWILIO_API_KEY_SID;
 const twilioApiKeySecret = process.env.TWILIO_API_KEY_SECRET;
