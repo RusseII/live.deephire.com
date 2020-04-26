@@ -1,16 +1,8 @@
 import React, { createContext, ReactNode } from 'react';
-import {
-  CreateLocalTrackOptions,
-  ConnectOptions,
-  LocalAudioTrack,
-  LocalVideoTrack,
-  Room,
-  TwilioError,
-} from 'twilio-video';
+import { ConnectOptions, Room, TwilioError, LocalAudioTrack, LocalVideoTrack } from 'twilio-video';
 import { Callback, ErrorCallback } from '../../types';
 import { SelectedParticipantProvider } from './useSelectedParticipant/useSelectedParticipant';
 
-import AttachVisibilityHandler from './AttachVisibilityHandler/AttachVisibilityHandler';
 import useHandleRoomDisconnectionErrors from './useHandleRoomDisconnectionErrors/useHandleRoomDisconnectionErrors';
 import useHandleOnDisconnect from './useHandleOnDisconnect/useHandleOnDisconnect';
 import useHandleTrackPublicationFailed from './useHandleTrackPublicationFailed/useHandleTrackPublicationFailed';
@@ -31,7 +23,7 @@ export interface IVideoContext {
   connect: (token: string) => Promise<void>;
   onError: ErrorCallback;
   onDisconnect: Callback;
-  getLocalVideoTrack: (facingMode?: CreateLocalTrackOptions['facingMode']) => Promise<LocalVideoTrack>;
+  getLocalVideoTrack: () => Promise<LocalVideoTrack>;
 }
 
 export const VideoContext = createContext<IVideoContext>(null!);
@@ -70,11 +62,6 @@ export function VideoProvider({ options, children, onError = () => {}, onDisconn
       }}
     >
       <SelectedParticipantProvider room={room}>{children}</SelectedParticipantProvider>
-      {/* 
-        The AttachVisibilityHandler component is using the useLocalVideoToggle hook
-        which must be used within the VideoContext Provider.
-      */}
-      <AttachVisibilityHandler />
     </VideoContext.Provider>
   );
 }

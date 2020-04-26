@@ -3,12 +3,7 @@ import { render } from '@testing-library/react';
 import VideoTrack from './VideoTrack';
 
 describe('the VideoTrack component', () => {
-  const mockTrack = {
-    attach: jest.fn(),
-    detach: jest.fn(),
-    setPriority: jest.fn(),
-    mediaStreamTrack: { getSettings: () => ({}) },
-  } as any;
+  const mockTrack = { attach: jest.fn(), detach: jest.fn(), setPriority: jest.fn() } as any;
 
   afterEach(jest.clearAllMocks);
 
@@ -29,17 +24,6 @@ describe('the VideoTrack component', () => {
     expect(container.querySelector('video')!.style.transform).toEqual('rotateY(180deg)');
   });
 
-  it('should not flip the video horizontally if the track is the local rear-facing camera', () => {
-    const mockTrack2 = {
-      ...mockTrack,
-      mediaStreamTrack: {
-        getSettings: () => ({ facingMode: 'environment' }),
-      },
-    };
-    const { container } = render(<VideoTrack track={mockTrack2} isLocal />);
-    expect(container.querySelector('video')!.style.transform).toEqual('');
-  });
-
   it('should not flip the video horizontally if the track is not local', () => {
     const { container } = render(<VideoTrack track={mockTrack} />);
     expect(container.querySelector('video')!.style.transform).toEqual('');
@@ -51,12 +35,7 @@ describe('the VideoTrack component', () => {
   });
 
   it('should set the track priority to "null" when it is detached and set the priority of the new track', () => {
-    const mockTrack2 = {
-      attach: jest.fn(),
-      detach: jest.fn(),
-      setPriority: jest.fn(),
-      mediaStreamTrack: { getSettings: () => ({}) },
-    } as any;
+    const mockTrack2 = { attach: jest.fn(), detach: jest.fn(), setPriority: jest.fn() } as any;
     const { rerender } = render(<VideoTrack track={mockTrack} priority="high" />);
     expect(mockTrack.setPriority).toHaveBeenCalledWith('high');
     rerender(<VideoTrack track={mockTrack2} priority="high" />);

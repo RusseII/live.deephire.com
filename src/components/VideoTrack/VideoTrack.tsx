@@ -35,8 +35,7 @@ export default function VideoTrack({ track, isLocal, priority }: VideoTrackProps
   }, [track, priority]);
 
   // The local video track is mirrored.
-  const isFrontFacing = track.mediaStreamTrack.getSettings().facingMode !== 'environment';
-  const style = isLocal && isFrontFacing ? { transform: 'rotateY(180deg)' } : {};
+  const style = isLocal ? { transform: 'rotateY(180deg)' } : {};
 
   return <Video ref={ref} style={style} />;
 }
