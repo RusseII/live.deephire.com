@@ -73,12 +73,12 @@
     "eject": "react-scripts eject",
     "lint": "eslint src/**/*.{ts,tsx}",
     "server": "node server.js",
-    "test:ci": "jest --ci --runInBand --reporters=default --reporters=jest-junit --coverage",
+    "test:ci": "jest --ci --giunInBand --reporters=default --reporters=jest-junit --coverage",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run --browser chrome",
     "cypress:ci": "cross-env CYPRESS_baseUrl=http://localhost:8081 start-server-and-test server http://localhost:8081 cypress:run",
     "deploy:twilio-cli": "cross-env REACT_APP_SET_AUTH=passcode npm run build && twilio rtc:apps:video:deploy --authentication=passcode --app-directory ./build",
-    "deploy:aws": "npm run build && aws s3 sync --delete build/ s3://live.deephire.com && aws cloudfront create-invalidation --distribution-id E3FHHUZC9448VZ  --paths '/*'"
+    "deploy:aws": "rm -rf build && npm run build && aws s3 sync --delete build/ s3://live.deephire.com && aws cloudfront create-invalidation --distribution-id E3FHHUZC9448VZ  --paths '/*'"
   },
   "eslintConfig": {
     "extends": "react-app",
