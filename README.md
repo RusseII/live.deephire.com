@@ -14,7 +14,7 @@ This application demonstrates a multi-party video application built with [twilio
 
 ![App Preview](https://user-images.githubusercontent.com/12685223/76361972-c035b700-62e5-11ea-8f9d-0bb24bd73fd4.png)
 
-## Pre-requisites
+## Prerequisites
 
 You must have the following installed:
 
@@ -43,6 +43,7 @@ This app requires an additional plugin. Install the CLI plugin with:
 
 ## Deploy the app to Twilio
 
+Before deploying the app, make sure you are using the correct account on the Twilio CLI (using the command `twilio profiles:list` to check). 
 The app is deployed to Twilio with a single command:
 
     $ npm run deploy:twilio-cli
