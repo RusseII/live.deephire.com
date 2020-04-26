@@ -1,13 +1,31 @@
 import { useCallback, useEffect, useState } from 'react';
-import Video, { LocalVideoTrack, LocalAudioTrack } from 'twilio-video';
+import Video, { LocalVideoTrack, LocalAudioTrack, CreateLocalTrackOptions } from 'twilio-video';
+
+// This function ensures that the user has granted the browser permission to use audio and video
+// devices. If permission has not been granted, it will cause the browser to ask for permission
+// for audio and video at the same time (as opposed to separate requests).
+function ensureMediaPermissions() {
+  return navigator.mediaDevices
+    .enumerateDevices()
+    .then(devices => devices.every(device => !(device.deviceId && device.label)))
+    .then(shouldAskForMediaPermissions => {
+      if (shouldAskForMediaPermissions) {
+        navigator.mediaDevices
+          .getUserMedia({ audio: true, video: true })
+          .then(mediaStream => mediaStream.getTracks().forEach(track => track.stop()));
+      }
+    });
+}
 
 export function useLocalAudioTrack() {
   const [track, setTrack] = useState<LocalAudioTrack>();
 
   useEffect(() => {
-    Video.createLocalAudioTrack().then(newTrack => {
-      setTrack(newTrack);
-    });
+    ensureMediaPermissions().then(() =>
+      Video.createLocalAudioTrack().then(newTrack => {
+        setTrack(newTrack);
+      })
+    );
   }, []);
 
   useEffect(() => {
@@ -26,19 +44,25 @@ export function useLocalAudioTrack() {
 export function useLocalVideoTrack() {
   const [track, setTrack] = useState<LocalVideoTrack>();
 
-  const getLocalVideoTrack = useCallback(
-    () =>
-      Video.createLocalVideoTrack({
-        frameRate: 24,
-        height: 720,
-        width: 1280,
-        name: 'camera',
-      }).then(newTrack => {
+  const getLocalVideoTrack = useCallback((facingMode?: CreateLocalTrackOptions['facingMode']) => {
+    const options: CreateLocalTrackOptions = {
+      frameRate: 24,
+      height: 720,
+      width: 1280,
+      name: 'camera',
+    };
+
+    if (facingMode) {
+      options.facingMode = facingMode;
+    }
+
+    return ensureMediaPermissions().then(() =>
+      Video.createLocalVideoTrack(options).then(newTrack => {
         setTrack(newTrack);
         return newTrack;
-      }),
-    []
-  );
+      })
+    );
+  }, []);
 
   useEffect(() => {
     // We get a new local video track when the app loads.
