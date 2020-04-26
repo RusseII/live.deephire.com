@@ -1,5 +1,6 @@
 import React from 'react';
 import { styled } from '@material-ui/core/styles';
+import Sidebar from './Sidebar'
 import * as Sentry from '@sentry/browser';
 
 import Controls from './components/Controls/Controls';
@@ -34,8 +35,9 @@ export default function App() {
 
   return (
     <Container style={{ height }}>
+      <Sidebar/>
       <MenuBar />
-      <Main>
+      <Main style={{width: 'calc(100% - 720px'}}>
         {roomState === 'disconnected' ? <LocalVideoPreview /> : <Room />}
         <Controls />
       </Main>

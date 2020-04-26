@@ -142,7 +142,7 @@ export default function MenuBar() {
             {(isConnecting || isFetching) && <CircularProgress className={classes.loadingSpinner} />}
           </form>
         ) : (
-          null
+         <img style={{height: 75, width: 100}} src='https://s3-media1.fl.yelpcdn.com/bphoto/mkUamxveWU9QHTXcN5tPDg/o.jpg'></img>
           // <h3>{roomName}</h3>
         )}
         <div className={classes.rightButtonContainer}>
