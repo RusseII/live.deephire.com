@@ -85,8 +85,8 @@ export default function MenuBar() {
 
   const getLogo = async () => {
 
-    // const apiUrl = 'https://a.deephire.com/v1';
-    const apiUrl = 'http://localhost:3001/v1';
+    const apiUrl = 'https://a.deephire.com/v1';
+    // const apiUrl = 'http://localhost:3001/v1';
   
   
     const liveData = await fetch(`${apiUrl}/live/${URLRoomName}`)
