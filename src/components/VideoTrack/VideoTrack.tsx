@@ -7,6 +7,7 @@ const Video = styled('video')({
   width: '100%',
   maxHeight: '100%',
   objectFit: 'contain',
+  "MozBoxShadow":"2px 2px 5px rgba(0, 0, 0, 0.2)","OBoxShadow":"2px 2px 5px rgba(0, 0, 0, 0.2)","WebkitBoxShadow":"2px 2px 5px rgba(0, 0, 0, 0.2)","background":"linear-gradient(to bottom, #000000 0%, #282828 60%, #000000 100%)"
 });
 
 interface VideoTrackProps {
