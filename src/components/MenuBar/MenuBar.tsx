@@ -190,8 +190,6 @@ export default function MenuBar() {
             // <h3>{roomName}</h3
           )}
         <div className={classes.rightButtonContainer}>
-
-
           <FlipCameraButton />
           <DeviceSelector />
           <ToggleFullscreenButton />
