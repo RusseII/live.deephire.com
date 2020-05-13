@@ -12,6 +12,7 @@ import Menu from './Menu/Menu';
 import { useAppState } from '../../state';
 import { useParams } from 'react-router-dom';
 import useRoomState from '../../hooks/useRoomState/useRoomState';
+import useAsync from '../../hooks/useAsync';
 import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
 import { Typography } from '@material-ui/core';
 import FlipCameraButton from './FlipCameraButton/FlipCameraButton';
@@ -59,9 +60,15 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+
+
+
 export default function MenuBar() {
   const classes = useStyles();
   let { URLRoomName } = useParams();
+
+
+  
 
   if (!URLRoomName) {
     URLRoomName = window.sessionStorage.getItem('room') || '';
@@ -76,6 +83,33 @@ export default function MenuBar() {
   const [name, setName] = useState<string>(user?.displayName || '');
   const [roomName, setRoomName] = useState<string>('');
 
+  const getLogo = async () => {
+
+    const apiUrl = 'https://a.deephire.com/v1';
+    // const apiUrl = 'http://localhost:3001/v1';
+  
+  
+    const liveData = await fetch(`${apiUrl}/live/${URLRoomName}`)
+      .then((response: any) => {
+        if (response.ok) return response.json();
+      })
+  
+    const { companyId } = liveData
+    const companyData = await fetch(`${apiUrl}/companies/${companyId}`)
+      .then((response: any) => {
+        if (response.ok) return response.json();
+      })
+  
+      const { logo } = companyData
+      return logo 
+  };
+
+  const { execute, value } = useAsync(getLogo, false);
+  
+ 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {execute()}, [URLRoomName])
+
   useEffect(() => {
     if (URLRoomName) {
       setRoomName(URLRoomName);
@@ -88,6 +122,7 @@ export default function MenuBar() {
     if (URLRoomName && URLUserName) {
       getToken(URLUserName, URLRoomName).then(token => connect(token));
     }
+  
   }, [URLRoomName, URLUserName, connect, getToken]);
 
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -112,6 +147,7 @@ export default function MenuBar() {
       <Toolbar className={classes.toolbar}>
         {roomState === 'disconnected' ? (
           <form className={classes.form} onSubmit={handleSubmit}>
+
             {window.location.search.includes('customIdentity=true') || !user?.displayName ? (
               <TextField
                 id="menu-name"
@@ -122,12 +158,12 @@ export default function MenuBar() {
                 margin="dense"
               />
             ) : (
-              <Typography className={classes.displayName} variant="body1">
-                {user.displayName}
-              </Typography>
-            )}
-                  
-         
+                <Typography className={classes.displayName} variant="body1">
+                  {user.displayName}
+                </Typography>
+              )}
+
+
             {/* <TextField
               id="menu-room"
               label="Room"
@@ -136,6 +172,7 @@ export default function MenuBar() {
               onChange={handleRoomNameChange}
               margin="dense"
             /> */}
+
             <Button
               className={classes.joinButton}
               type="submit"
@@ -148,9 +185,10 @@ export default function MenuBar() {
             {(isConnecting || isFetching) && <CircularProgress className={classes.loadingSpinner} />}
           </form>
         ) : (
-          null
-          // <h3>{roomName}</h3>
-        )}
+            // null
+            <img style={{ height: 40 }} src={value || ''} />
+            // <h3>{roomName}</h3
+          )}
         <div className={classes.rightButtonContainer}>
           <FlipCameraButton />
           <DeviceSelector />
