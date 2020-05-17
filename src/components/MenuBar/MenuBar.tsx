@@ -12,11 +12,15 @@ import Menu from './Menu/Menu';
 import { useAppState } from '../../state';
 import { useParams } from 'react-router-dom';
 import useRoomState from '../../hooks/useRoomState/useRoomState';
-import useAsync from '../../hooks/useAsync';
+
 import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
 import { Typography } from '@material-ui/core';
 import FlipCameraButton from './FlipCameraButton/FlipCameraButton';
 import { DeviceSelector } from './DeviceSelector/DeviceSelector';
+import useAsync from '../../hooks/useAsync';
+import { getLogo } from '../../api'
+
+
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -62,7 +66,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 
 
-
 export default function MenuBar() {
   const classes = useStyles();
   let { URLRoomName } = useParams();
@@ -81,34 +84,16 @@ export default function MenuBar() {
   const roomState = useRoomState();
 
   const [name, setName] = useState<string>(user?.displayName || '');
-  const [roomName, setRoomName] = useState<string>('');
+  const [roomName,setRoomName] = useState<string>('');
 
-  const getLogo = async () => {
 
-    const apiUrl = 'https://a.deephire.com/v1';
-    // const apiUrl = 'http://localhost:3001/v1';
-  
-  
-    const liveData = await fetch(`${apiUrl}/live/${URLRoomName}`)
-      .then((response: any) => {
-        if (response.ok) return response.json();
-      })
-  
-    const { companyId } = liveData
-    const companyData = await fetch(`${apiUrl}/companies/${companyId}`)
-      .then((response: any) => {
-        if (response.ok) return response.json();
-      })
-  
-      const { logo } = companyData
-      return logo 
-  };
 
   const { execute, value } = useAsync(getLogo, false);
   
  
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {execute()}, [URLRoomName])
+  useEffect(() => {
+    execute(URLRoomName)
+  }, [URLRoomName, execute])
 
   useEffect(() => {
     if (URLRoomName) {
@@ -172,7 +157,6 @@ export default function MenuBar() {
               onChange={handleRoomNameChange}
               margin="dense"
             /> */}
-
             <Button
               className={classes.joinButton}
               type="submit"
@@ -199,3 +183,7 @@ export default function MenuBar() {
     </AppBar>
   );
 }
+
+
+
+

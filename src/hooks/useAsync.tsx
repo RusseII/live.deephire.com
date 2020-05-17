@@ -10,11 +10,11 @@ const useAsync = (asyncFunction: any, immediate = true) => {
   // handles setting state for pending, value, and error.
   // useCallback ensures the below useEffect is not called
   // on every render, but only if asyncFunction changes.
-  const execute = useCallback(() => {
+  const execute = useCallback((...params) => {
     setPending(true);
     setValue(null);
     setError(null);
-    return asyncFunction()
+    return asyncFunction(...params)
       .then((response: any) => setValue(response))
       // eslint-disable-next-line no-shadow
       .catch((error: any) => setError(error))
