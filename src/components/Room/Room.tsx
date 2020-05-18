@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import ParticipantStrip from '../ParticipantStrip/ParticipantStrip';
 import { styled } from '@material-ui/core/styles';
 import MainParticipant from '../MainParticipant/MainParticipant';
-import 'antd/dist/antd.css';
 import { Drawer, Tabs } from 'antd'
 import useAsync from '../../hooks/useAsync';
 import { getDocuments } from '../../api'

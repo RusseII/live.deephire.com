@@ -2,7 +2,7 @@ const apiUrl = 'https://a.deephire.com/v1';
 // const apiUrl = 'http://localhost:3001/v1';
 
 
-export const getLogo = async (URLRoomName: string | undefined) => {
+export const getCompanyData = async (URLRoomName: string | undefined) => {
 
     const liveData = await fetch(`${apiUrl}/live/${URLRoomName}`)
         .then((response: any) => {
@@ -15,8 +15,7 @@ export const getLogo = async (URLRoomName: string | undefined) => {
             if (response.ok) return response.json();
         })
 
-    const { logo } = companyData
-    return logo
+    return companyData
 };
 
 
