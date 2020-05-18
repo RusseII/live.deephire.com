@@ -18,14 +18,18 @@ import { Typography } from '@material-ui/core';
 import FlipCameraButton from './FlipCameraButton/FlipCameraButton';
 import { DeviceSelector } from './DeviceSelector/DeviceSelector';
 import useAsync from '../../hooks/useAsync';
-import { getLogo } from '../../api'
+import { getCompanyData } from '../../api'
+import {Modal} from 'antd'
+import { ExclamationCircleOutlined } from '@ant-design/icons'
 
+const {confirm} = Modal;
 
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
-      backgroundColor: theme.palette.background.default,
+      // backgroundColor: theme.palette.background.default,
+      backgroundColor: 'white',
     },
     toolbar: {
       [theme.breakpoints.down('xs')]: {
@@ -88,7 +92,14 @@ export default function MenuBar() {
 
 
 
-  const { execute, value } = useAsync(getLogo, false);
+  interface valueProps {
+    execute: () => null
+    value: {
+      companyName: string
+      logo: string
+    }
+  }
+  const { execute, value }: any = useAsync(getCompanyData, false);
   
  
   useEffect(() => {
@@ -118,8 +129,13 @@ export default function MenuBar() {
     setRoomName(event.target.value);
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+
+    const confirmation = await showConfirm()
+    if (!confirmation) return
+
     // If this app is deployed as a twilio function, don't change the URL because routing isn't supported.
     if (!window.location.origin.includes('twil.io')) {
       window.history.replaceState(null, '', window.encodeURI(`/room/${roomName}${window.location.search || ''}`));
@@ -127,8 +143,30 @@ export default function MenuBar() {
     getToken(name, roomName).then(token => connect(token));
   };
 
+
+  const showConfirm = async () => (
+    new Promise((resolve, reject) => 
+    confirm({
+      content: `This meeting will be automatically recorded for note taking purposes. After the meeting, ${value.companyName} will get the recording. Contact them if you need further information.`,
+      icon: <ExclamationCircleOutlined />,
+      title: 'Meeting will be recorded',
+      okText: "Join Room",
+      cancelText: "Leave",
+      maskStyle: {backgroundColor: 'rgba(0,0,0,0.9'},
+     
+      onOk() {
+        resolve(true)
+      },
+      onCancel() {
+        resolve(false)
+      },
+    })
+    )
+  )
+
   return (
     <AppBar className={classes.container} position="static">
+      {/* <RecordingConsent company="Company"/> */}
       <Toolbar className={classes.toolbar}>
         {roomState === 'disconnected' ? (
           <form className={classes.form} onSubmit={handleSubmit}>
@@ -159,7 +197,8 @@ export default function MenuBar() {
             /> */}
             <Button
               className={classes.joinButton}
-              type="submit"
+              // type="submit"
+              onClick={showConfirm}
               color="primary"
               variant="contained"
               disabled={isConnecting || !name || !roomName || isFetching}
@@ -170,7 +209,7 @@ export default function MenuBar() {
           </form>
         ) : (
             // null
-            <img style={{ height: 40 }} src={value || ''} />
+            <img alt={value ? value!.companyName: "Company"} style={{ height: 40 }} src= { value ? value!.logo : ''} />
             // <h3>{roomName}</h3
           )}
         <div className={classes.rightButtonContainer}>
@@ -187,3 +226,21 @@ export default function MenuBar() {
 
 
 
+interface RecordingConsentProps {
+company: string
+}
+const RecordingConsent = (props: RecordingConsentProps) => {
+  const {company} = props
+  return (
+  <Modal
+  title="Meeting will be recorded"
+  visible
+  okText="Join Room"
+  cancelText="Leave"
+  // onOk={this.handleOk}
+  // onCancel={this.handleCancel}
+>
+  <p>{`This meeting will be automatically recorded for note taking purposes. After the meeting, ${company} will get the recording. Contact them if you need further information.`}</p>
+
+</Modal>)
+}
