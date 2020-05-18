@@ -125,9 +125,9 @@ export default function MenuBar() {
     setName(event.target.value);
   };
 
-  const handleRoomNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setRoomName(event.target.value);
-  };
+  // const handleRoomNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+  //   setRoomName(event.target.value);
+  // };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -155,6 +155,7 @@ export default function MenuBar() {
       maskStyle: {backgroundColor: 'rgba(0,0,0,0.9'},
      
       onOk() {
+        console.log("ok")
         resolve(true)
       },
       onCancel() {
@@ -197,8 +198,7 @@ export default function MenuBar() {
             /> */}
             <Button
               className={classes.joinButton}
-              // type="submit"
-              onClick={showConfirm}
+              type="submit"
               color="primary"
               variant="contained"
               disabled={isConnecting || !name || !roomName || isFetching}
@@ -221,26 +221,4 @@ export default function MenuBar() {
       </Toolbar>
     </AppBar>
   );
-}
-
-
-
-
-interface RecordingConsentProps {
-company: string
-}
-const RecordingConsent = (props: RecordingConsentProps) => {
-  const {company} = props
-  return (
-  <Modal
-  title="Meeting will be recorded"
-  visible
-  okText="Join Room"
-  cancelText="Leave"
-  // onOk={this.handleOk}
-  // onCancel={this.handleCancel}
->
-  <p>{`This meeting will be automatically recorded for note taking purposes. After the meeting, ${company} will get the recording. Contact them if you need further information.`}</p>
-
-</Modal>)
 }
