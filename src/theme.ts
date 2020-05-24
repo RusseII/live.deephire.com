@@ -19,8 +19,11 @@ export default createMuiTheme({
     background: {
       default: "#f1f2f5"
     },
+    // primary: {
+    //   main: '#1890ff',
+    // },
     primary: {
-      main: '#1890ff',
+      main: '#55984f',
     },
   },
   sidebarWidth: 260,

@@ -24,13 +24,14 @@ function debounce(fn: any, ms: any) {
 export default function Room() {
 
   let { URLRoomName } = useParams();
-  const { execute, value } = useAsync(getDocuments, false);
+  const { execute, value }: {execute: any, value: CandidateData | null} = useAsync(getDocuments, false);
+
 
 
   const Container = styled('div')(({ theme }) => ({
     position: 'relative',
     height: '100%',
-    width: value && dimensions.width > 600 ? 'calc(60vw - 24px)' : '100%',
+    width: value && value!.files && dimensions.width > 600 ? 'calc(60vw - 24px)' : '100%',
     display: 'grid',
     gridTemplateColumns: `${theme.sidebarWidth}px 1fr`,
     gridTemplateAreas: '". participantList"',
@@ -106,7 +107,7 @@ interface DocumentsProps {
 interface CandidateData {
   files: File[]
   email: string
-}
+} 
 
 interface File {
   name: string, uid: string
