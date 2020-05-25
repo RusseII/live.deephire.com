@@ -26,6 +26,7 @@ export const getDocuments = async (URLRoomName: string | undefined) => {
         })
 
     const { candidateEmail, interviewType } = liveData
+    
     // if (interviewType === "client") {
         // will add logic here for client only view
     // }
@@ -35,4 +36,13 @@ export const getDocuments = async (URLRoomName: string | undefined) => {
                 if (response.ok) return response.json();
             })
         return candidateData
+}
+
+export const getLiveData = async (URLRoomName: string | undefined) => {
+    const liveData = await fetch(`${apiUrl}/live/${URLRoomName}`)
+        .then((response: any) => {
+            if (response.ok) return response.json();
+        })
+
+return liveData
 }

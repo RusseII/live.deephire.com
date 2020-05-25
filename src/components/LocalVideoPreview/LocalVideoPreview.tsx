@@ -6,6 +6,11 @@ import {Col, Row, Typography, Button, Form, Input} from 'antd'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { isMobile } from '../../utils';
 
+import { getCompanyData, getLiveData } from '../../api'
+import useAsync from '../../hooks/useAsync';
+
+
+
 
 
 
@@ -55,6 +60,16 @@ export default function LocalVideoPreview() {
   const [roomName,setRoomName] = useState<string>('');
 
 
+  const { execute, value }: any = useAsync(getCompanyData, false);
+  
+  const { execute: executeLiveData, value: liveDataValue }: any = useAsync(getLiveData, false);
+
+  
+  useEffect(() => {
+    execute(URLRoomName)
+    executeLiveData(URLRoomName)
+  }, [URLRoomName, execute, executeLiveData])
+
   useEffect(() => {
     if (URLRoomName) {
       setRoomName(URLRoomName);
@@ -93,7 +108,7 @@ export default function LocalVideoPreview() {
   const showConfirm = async () => (
     new Promise((resolve, reject) => 
     Modal.confirm({
-      content: `This meeting will be automatically recorded for note taking purposes. After the meeting,  will get the recording. Contact them if you need further information.`,
+      content: `This meeting will be automatically recorded for note taking purposes. After the meeting, ${value.companyName} will get the recording. Contact them if you need further information.`,
       icon: <ExclamationCircleOutlined />,
       title: 'Meeting will be recorded',
       okText: "Join Room",
@@ -119,7 +134,7 @@ export default function LocalVideoPreview() {
     return  (<Col xs={24} sm={24} md={10}>
       <Row justify='center'><Typography.Title level={2} >Ready to Join?</Typography.Title>
       </Row>
-      <Row justify='center'><Typography.Paragraph >AppleOne, Software Engineer, Russell Ratcliffe</Typography.Paragraph>
+      <Row justify='center'><Typography.Paragraph >{`${value?.companyName}, ${liveDataValue?.jobName ? liveDataValue.jobName + ',': ''} ${liveDataValue?.candidateName}`}</Typography.Paragraph>
       </Row>
       <Form 
       style={{ textAlign: 'center', marginTop: 12}}
