@@ -134,7 +134,7 @@ export default function LocalVideoPreview() {
     return  (<Col xs={24} sm={24} md={10}>
       <Row justify='center'><Typography.Title level={2} >Ready to Join?</Typography.Title>
       </Row>
-      <Row justify='center'><Typography.Paragraph >{`${value?.companyName}, ${liveDataValue?.jobName ? liveDataValue.jobName + ',': ''} ${liveDataValue?.candidateName}`}</Typography.Paragraph>
+      <Row justify='center'><Typography.Paragraph >{`${value?.companyName ? value?.companyName + ',' : ''} ${liveDataValue?.jobName ? liveDataValue.jobName + ',': ''} ${liveDataValue?.candidateName ? liveDataValue?.candidateName : ''}`}</Typography.Paragraph>
       </Row>
       <Form 
       style={{ textAlign: 'center', marginTop: 12}}
