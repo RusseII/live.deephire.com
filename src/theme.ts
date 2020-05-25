@@ -14,6 +14,15 @@ declare module '@material-ui/core/styles/createMuiTheme' {
 }
 
 export default createMuiTheme({
+  breakpoints: {
+    values: {
+  xs: 480,
+  sm: 576,
+  md: 768,
+  lg: 992,
+  xl: 1200,
+}
+  },
   palette: {
     type: 'light',
     background: {
@@ -25,6 +34,7 @@ export default createMuiTheme({
     primary: {
       main: '#55984f',
     },
+    
   },
   sidebarWidth: 260,
   sidebarMobileHeight: 90,
