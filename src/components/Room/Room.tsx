@@ -31,7 +31,7 @@ export default function Room() {
   const Container = styled('div')(({ theme }) => ({
     position: 'relative',
     height: '100%',
-    width: value && value!.files && dimensions.width > 600 ? 'calc(60vw - 24px)' : '100%',
+    width: value && value!.files && value!.files[0] &&  dimensions.width > 600 ? 'calc(60vw - 24px)' : '100%',
     display: 'grid',
     gridTemplateColumns: `${theme.sidebarWidth}px 1fr`,
     gridTemplateAreas: '". participantList"',
@@ -83,7 +83,7 @@ interface ResumeDrawerProps {
 }
 
 const ResumeDrawer = ({ candidateData }: ResumeDrawerProps) => {
-  if (candidateData && candidateData.files) {
+  if (candidateData && candidateData.files && candidateData.files[0]) {
     return (
       <Drawer
         mask={false}

@@ -1,6 +1,8 @@
 import React, { ChangeEvent, FormEvent, useState, useEffect } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
+import { isMobile } from '../../utils';
+
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -174,30 +176,19 @@ export default function MenuBar() {
         {roomState === 'disconnected' ? (
           <form className={classes.form} onSubmit={handleSubmit}>
 
-            {window.location.search.includes('customIdentity=true') || !user?.displayName ? (
+{isMobile ? 
+<div>
               <TextField
                 id="menu-name"
-                label="Name"
+                label="Enter Name to Join"
                 className={classes.textField}
                 value={name}
                 onChange={handleNameChange}
                 margin="dense"
               />
-            ) : (
-                <Typography className={classes.displayName} variant="body1">
-                  {user.displayName}
-                </Typography>
-              )}
+ 
 
 
-            {/* <TextField
-              id="menu-room"
-              label="Room"
-              className={classes.textField}
-              value={roomName}
-              onChange={handleRoomNameChange}
-              margin="dense"
-            /> */}
             <Button
               className={classes.joinButton}
               type="submit"
@@ -207,6 +198,9 @@ export default function MenuBar() {
             >
               Join Room
             </Button>
+            </div> : 
+              <img alt={value ? value!.companyName: "Company"} style={{ height: 40 }} src= { value ? value!.logo : ''} />
+}
             {(isConnecting || isFetching) && <CircularProgress className={classes.loadingSpinner} />}
           </form>
         ) : (
