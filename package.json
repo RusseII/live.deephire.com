@@ -70,7 +70,8 @@
   "scripts": {
     "start": "concurrently npm:server npm:dev",
     "dev": "craco start",
-    "build": "node ./scripts/build.js",
+    "build": "craco build",
+    "old-build": "node ./scripts/build.js",
     "test": "jest",
     "eject": "react-scripts eject",
     "lint": "eslint src/**/*.{ts,tsx}",
