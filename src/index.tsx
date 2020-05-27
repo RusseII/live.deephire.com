@@ -15,8 +15,8 @@ import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import theme from './theme';
 import './types';
 import { VideoProvider } from './components/VideoProvider';
-import { Result, Button, Typography} from 'antd'
-import { ChromeFilled, AppleOutlined } from '@ant-design/icons';
+import { Result, Typography} from 'antd'
+import { ChromeOutlined, AppleOutlined } from '@ant-design/icons';
 import IEPolyfills from "./polyfils.js"
 
 import 'antd/dist/antd.less';
@@ -29,12 +29,10 @@ IEPolyfills()
 const showChromeBrowser = () => (
  <Result
   title="You must be using Google Chrome to access this site"
-  icon={<ChromeFilled />}
-  subTitle="Please download this up-to-date, free and excellent browser made by Google:"
+  icon={<ChromeOutlined />}
+  subTitle="Please copy the below link and paste it in Google Chrome"
   extra={
-    <Button href="https://www.google.com/chrome/" target="_parent" size="large" type="primary">
-      Get the Google Chrome Browser
-    </Button>
+    <Typography.Paragraph copyable>{window.location.href}</Typography.Paragraph>
   }
 /> 
 )
@@ -101,8 +99,6 @@ const WorkingApp = () => {
 if (!isSupported) {
   const { detect } = require('detect-browser');
   const browser = detect();
-  console.log(browser)
-  alert(JSON.stringify(browser))
   if (browser && browser.os === 'iOS')  {
     return showSafariBrowser()
   }
