@@ -15,8 +15,41 @@ import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import theme from './theme';
 import './types';
 import { VideoProvider } from './components/VideoProvider';
+import { Result, Button, Typography} from 'antd'
+import { ChromeFilled, AppleOutlined } from '@ant-design/icons';
+import IEPolyfills from "./polyfils.js"
 
-// See: https://media.twiliocdn.com/sdk/js/video/releases/2.0.0/docs/global.html#ConnectOptions
+import 'antd/dist/antd.less';
+import { isSupported } from 'twilio-video'
+
+
+
+IEPolyfills()
+
+const showChromeBrowser = () => (
+ <Result
+  title="You must be using Google Chrome to access this site"
+  icon={<ChromeFilled />}
+  subTitle="Please download this up-to-date, free and excellent browser made by Google:"
+  extra={
+    <Button href="https://www.google.com/chrome/" target="_parent" size="large" type="primary">
+      Get the Google Chrome Browser
+    </Button>
+  }
+/> 
+)
+
+const showSafariBrowser = () => (
+  <Result
+   title="You must be using Safari to access this site"
+   icon={<AppleOutlined />}
+   subTitle="Please copy the below link and paste it in Safari"
+   extra={
+     <Typography.Paragraph copyable>{window.location.href}</Typography.Paragraph>
+   }
+ /> 
+ )
+
 // for available connection options.
 const connectionOptions: ConnectOptions = {
   // Bandwidth Profile, Dominant Speaker, and Network Quality
@@ -63,25 +96,47 @@ const VideoApp = () => {
   );
 };
 
-ReactDOM.render(
-  <MuiThemeProvider theme={theme}>
-    <CssBaseline />
-    <Router>
-      <AppStateProvider>
-        <Switch>
-          <PrivateRoute exact path="/">
-            <VideoApp />
-          </PrivateRoute>
-          <PrivateRoute path="/room/:URLRoomName">
-            <VideoApp />
-          </PrivateRoute>
-          <Route path="/login">
-            <LoginPage />
-          </Route>
-          <Redirect to="/" />
-        </Switch>
-      </AppStateProvider>
-    </Router>
-  </MuiThemeProvider>,
+const WorkingApp = () => {
+
+if (!isSupported) {
+  const { detect } = require('detect-browser');
+  const browser = detect();
+  console.log(browser)
+  alert(JSON.stringify(browser))
+  if (browser && browser.os === 'iOS')  {
+    return showSafariBrowser()
+  }
+  
+  return showChromeBrowser()
+
+}
+
+return (
+<MuiThemeProvider theme={theme}>
+  <CssBaseline />
+  <Router>
+    <AppStateProvider>
+      <Switch>
+        <PrivateRoute exact path="/">
+          <VideoApp />
+        </PrivateRoute>
+        <PrivateRoute path="/room/:URLRoomName">
+          <VideoApp />
+        </PrivateRoute>
+        <Route path="/login">
+          <LoginPage />
+        </Route>
+        <Redirect to="/" />
+      </Switch>
+    </AppStateProvider>
+  </Router>
+</MuiThemeProvider>)
+
+}
+
+
+
+ReactDOM.render(<WorkingApp/>,
   document.getElementById('root')
 );
+

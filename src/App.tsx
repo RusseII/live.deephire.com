@@ -1,8 +1,6 @@
 import React from 'react';
 import { styled } from '@material-ui/core/styles';
 import * as Sentry from '@sentry/browser';
-import { Button, Result } from 'antd';
-import { ChromeFilled } from '@ant-design/icons';
 
 import Controls from './components/Controls/Controls';
 import LocalVideoPreview from './components/LocalVideoPreview/LocalVideoPreview';
@@ -13,10 +11,7 @@ import Room from './components/Room/Room';
 import useHeight from './hooks/useHeight/useHeight';
 import useRoomState from './hooks/useRoomState/useRoomState';
 
-import 'antd/dist/antd.less';
 Sentry.init({ dsn: 'https://ba050977b865461497954ae331877145@sentry.io/5187820' });
-
-const { isSupported } = require('twilio-video');
 
 const Container = styled('div')({
   display: 'grid',
@@ -37,32 +32,14 @@ export default function App() {
   // will look good on mobile browsers even after the location bar opens or closes.
   const height = useHeight();
 
-
-  if (isSupported) {
-    return (
-      <Container style={{ height }}>
-        <MenuBar />
-        <Main>
-          {roomState === 'disconnected' ? <LocalVideoPreview /> : <Room />}
-          <Controls />
-        </Main>
-        <ReconnectingNotification />
-      </Container>
-    );
-  } else {
-    return (
-      <Container style={{ height }}>
-        <Result
-          title="You must be using Google Chrome to access this site"
-          icon={<ChromeFilled />}
-          subTitle="Please download this up-to-date, free and excellent browser made by Google:"
-          extra={
-            <Button href="https://www.google.com/chrome/" target="_parent" size="large" type="primary">
-              Get the Google Chrome Browser
-            </Button>
-          }
-        />
-      </Container>
-    );
-  }
+  return (
+    <Container style={{ height }}>
+      <MenuBar />
+      <Main>
+        {roomState === 'disconnected' ? <LocalVideoPreview /> : <Room />}
+        <Controls />
+      </Main>
+      <ReconnectingNotification />
+    </Container>
+  );
 }
