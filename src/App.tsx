@@ -16,6 +16,8 @@ import useRoomState from './hooks/useRoomState/useRoomState';
 import 'antd/dist/antd.less';
 Sentry.init({ dsn: 'https://ba050977b865461497954ae331877145@sentry.io/5187820' });
 
+const { isSupported } = require('twilio-video');
+
 const Container = styled('div')({
   display: 'grid',
   gridTemplateRows: 'auto 1fr',
@@ -38,36 +40,32 @@ export default function App() {
   // will look good on mobile browsers even after the location bar opens or closes.
   const height = useHeight();
 
-  switch (browser && browser.name) {
-    case 'chrome':
-    case 'firefox':
-      // Take no action
-      // Optionally show confetti for choosing a modern browser
-      return (
-        <Container style={{ height }}>
-          <MenuBar />
-          <Main>
-            {roomState === 'disconnected' ? <LocalVideoPreview /> : <Room />}
-            <Controls />
-          </Main>
-          <ReconnectingNotification />
-        </Container>
-      );
 
-    default:
-      return (
-        <Container style={{ height }}>
-          <Result
-            title="You must be using Google Chrome to access this site"
-            icon={<ChromeFilled />}
-            subTitle="Please download this up-to-date, free and excellent browser made by Google:"
-            extra={
-              <Button href="https://www.google.com/chrome/" target="_parent" size="large" type="primary">
-                Get the Google Chrome Browser
-              </Button>
-            }
-          />
-        </Container>
-      );
+  if (isSupported) {
+    return (
+      <Container style={{ height }}>
+        <MenuBar />
+        <Main>
+          {roomState === 'disconnected' ? <LocalVideoPreview /> : <Room />}
+          <Controls />
+        </Main>
+        <ReconnectingNotification />
+      </Container>
+    );
+  } else {
+    return (
+      <Container style={{ height }}>
+        <Result
+          title="You must be using Google Chrome to access this site"
+          icon={<ChromeFilled />}
+          subTitle="Please download this up-to-date, free and excellent browser made by Google:"
+          extra={
+            <Button href="https://www.google.com/chrome/" target="_parent" size="large" type="primary">
+              Get the Google Chrome Browser
+            </Button>
+          }
+        />
+      </Container>
+    );
   }
 }
