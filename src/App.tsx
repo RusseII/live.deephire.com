@@ -1,6 +1,8 @@
 import React from 'react';
 import { styled } from '@material-ui/core/styles';
 import * as Sentry from '@sentry/browser';
+import { Button, Result } from 'antd';
+import { ChromeFilled } from '@ant-design/icons';
 
 import Controls from './components/Controls/Controls';
 import LocalVideoPreview from './components/LocalVideoPreview/LocalVideoPreview';
@@ -23,6 +25,9 @@ const Main = styled('main')({
   overflow: 'hidden',
 });
 
+const { detect } = require('detect-browser');
+const browser = detect();
+
 export default function App() {
   const roomState = useRoomState();
 
@@ -33,14 +38,36 @@ export default function App() {
   // will look good on mobile browsers even after the location bar opens or closes.
   const height = useHeight();
 
-  return (
-    <Container style={{ height }}>
-      <MenuBar />
-      <Main>
-        {roomState === 'disconnected' ? <LocalVideoPreview /> : <Room />}
-        <Controls />
-      </Main>
-      <ReconnectingNotification />
-    </Container>
-  );
+  switch (browser && browser.name) {
+    case 'chrome':
+    case 'firefox':
+      // Take no action
+      // Optionally show confetti for choosing a modern browser
+      return (
+        <Container style={{ height }}>
+          <MenuBar />
+          <Main>
+            {roomState === 'disconnected' ? <LocalVideoPreview /> : <Room />}
+            <Controls />
+          </Main>
+          <ReconnectingNotification />
+        </Container>
+      );
+
+    default:
+      return (
+        <Container style={{ height }}>
+          <Result
+            title="You must be using Google Chrome to access this site"
+            icon={<ChromeFilled />}
+            subTitle="Please download this up-to-date, free and excellent browser made by Google:"
+            extra={
+              <Button href="https://www.google.com/chrome/" target="_parent" size="large" type="primary">
+                Get the Google Chrome Browser
+              </Button>
+            }
+          />
+        </Container>
+      );
+  }
 }
