@@ -11,7 +11,7 @@ import Room from './components/Room/Room';
 import useHeight from './hooks/useHeight/useHeight';
 import useRoomState from './hooks/useRoomState/useRoomState';
 
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.less';
 Sentry.init({ dsn: 'https://ba050977b865461497954ae331877145@sentry.io/5187820' });
 
 const Container = styled('div')({
