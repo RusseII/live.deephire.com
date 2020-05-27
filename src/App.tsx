@@ -27,9 +27,6 @@ const Main = styled('main')({
   overflow: 'hidden',
 });
 
-const { detect } = require('detect-browser');
-const browser = detect();
-
 export default function App() {
   const roomState = useRoomState();
 
