@@ -1,6 +1,6 @@
 
 
-const polyfills = () => {
+
 if (!String.prototype.includes) {
     String.prototype.includes = function(search, start) {
       
@@ -94,6 +94,4 @@ if (!String.prototype.includes) {
       configurable: true
     });
   }
-}
 
-export default polyfills
