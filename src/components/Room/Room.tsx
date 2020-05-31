@@ -62,8 +62,6 @@ export default function Room() {
     })
     }, [URLRoomName, userName])
   
-
-
     useEffect(() => {
     const debouncedHandleResize = debounce(function handleResize() {
       setDimensions({
@@ -84,7 +82,6 @@ export default function Room() {
       <ParticipantStrip />
       <MainParticipant />
       {/* <Recording /> */}
-
       {dimensions.width > 600 && <ResumeDrawer candidateData={candidateData} />}
     </Container>
   );
