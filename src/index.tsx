@@ -18,7 +18,7 @@ import { VideoProvider } from './components/VideoProvider';
 import { Result, Typography } from 'antd'
 import { ChromeOutlined, AppleOutlined } from '@ant-design/icons';
 import "./polyfils.js"
-
+import { ContextWrapper } from './ContextWrapper'
 import 'antd/dist/antd.less';
 import { isSupported } from 'twilio-video'
 
@@ -95,41 +95,42 @@ const WorkingApp = () => {
   if (!isSupported) {
     const { detect } = require('detect-browser')
     const browser = detect()
-    if (browser && browser.name === 'chrome') return <FullApp/>
+    if (browser && browser.name === 'chrome') return <FullApp />
     if (browser && browser.os === 'iOS') {
       return showSafariBrowser()
     }
     return showChromeBrowser()
   }
 
-  return (<FullApp/> )
+  return (<FullApp />)
 }
 
 
 
 const FullApp = () => (
   <MuiThemeProvider theme={theme}>
-  <CssBaseline />
-  <Router>
-    <AppStateProvider>
-      <Switch>
-        <PrivateRoute exact path="/">
-          <VideoApp />
-        </PrivateRoute>
-        <PrivateRoute path="/room/:URLRoomName">
-          <VideoApp />
-        </PrivateRoute>
-        <Route path="/login">
-          <LoginPage />
-        </Route>
-        <Redirect to="/" />
-      </Switch>
-    </AppStateProvider>
-  </Router>
-</MuiThemeProvider>)
-  
+    <CssBaseline />
+    <Router>
+      <AppStateProvider>
+        <Switch>
+          <PrivateRoute exact path="/">
+            <VideoApp />
+          </PrivateRoute>
+          <PrivateRoute path="/room/:URLRoomName">
+            <ContextWrapper>
+              <VideoApp />
+            </ContextWrapper>
+          </PrivateRoute>
+          <Route path="/login">
+            <LoginPage />
+          </Route>
+          <Redirect to="/" />
+        </Switch>
+      </AppStateProvider>
+    </Router>
+  </MuiThemeProvider>)
 
-  ReactDOM.render(<WorkingApp />,
-    document.getElementById('root')
-  );
-  
+
+ReactDOM.render(<WorkingApp />,
+  document.getElementById('root')
+);

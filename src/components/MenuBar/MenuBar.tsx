@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useState, useEffect } from 'react';
+import React, { ChangeEvent, FormEvent, useState, useEffect, useContext } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
 import { isMobile } from '../../utils';
@@ -16,15 +16,13 @@ import { useParams } from 'react-router-dom';
 import useRoomState from '../../hooks/useRoomState/useRoomState';
 
 import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
-import { Typography } from '@material-ui/core';
 import FlipCameraButton from './FlipCameraButton/FlipCameraButton';
 import { DeviceSelector } from './DeviceSelector/DeviceSelector';
-import useAsync from '../../hooks/useAsync';
-import { getCompanyData } from '../../api'
-import {Modal} from 'antd'
+import { GlobalContext } from '../../ContextWrapper'
+import { Modal } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 
-const {confirm} = Modal;
+const { confirm } = Modal;
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -73,11 +71,15 @@ const useStyles = makeStyles((theme: Theme) =>
 
 
 export default function MenuBar() {
+
+  const globalData = useContext(GlobalContext)
+  const { companyData, setUserName } = globalData
+
   const classes = useStyles();
   let { URLRoomName } = useParams();
 
 
-  
+
 
   if (!URLRoomName) {
     URLRoomName = window.sessionStorage.getItem('room') || '';
@@ -90,7 +92,7 @@ export default function MenuBar() {
   const roomState = useRoomState();
 
   const [name, setName] = useState<string>(user?.displayName || '');
-  const [roomName,setRoomName] = useState<string>('');
+  const [roomName, setRoomName] = useState<string>('');
 
 
 
@@ -101,12 +103,7 @@ export default function MenuBar() {
       logo: string
     }
   }
-  const { execute, value }: any = useAsync(getCompanyData, false);
-  
- 
-  useEffect(() => {
-    execute(URLRoomName)
-  }, [URLRoomName, execute])
+
 
   useEffect(() => {
     if (URLRoomName) {
@@ -120,8 +117,8 @@ export default function MenuBar() {
     if (URLRoomName && URLUserName) {
       getToken(URLUserName, URLRoomName).then(token => connect(token));
     }
-  
-  }, [URLRoomName, URLUserName, connect, getToken]);
+
+  }, [URLRoomName, URLUserName, connect, getToken, setUserName]);
 
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -139,33 +136,34 @@ export default function MenuBar() {
     if (!confirmation) return
 
     Modal.destroyAll();
-    
+
     // If this app is deployed as a twilio function, don't change the URL because routing isn't supported.
     if (!window.location.origin.includes('twil.io')) {
       window.history.replaceState(null, '', window.encodeURI(`/room/${roomName}${window.location.search || ''}`));
     }
+    setUserName(URLUserName)
     getToken(name, roomName).then(token => connect(token));
   };
 
 
   const showConfirm = async () => (
-    new Promise((resolve, reject) => 
-    confirm({
-      content: `This meeting will be automatically recorded for note taking purposes. After the meeting, ${value.companyName} will get the recording. Contact them if you need further information.`,
-      icon: <ExclamationCircleOutlined />,
-      title: 'Meeting will be recorded',
-      okText: "Join Room",
-      cancelText: "Leave",
-      maskStyle: {backgroundColor: 'rgba(0,0,0,0.9'},
-     
-      onOk() {
-        console.log("ok")
-        resolve(true)
-      },
-      onCancel() {
-        resolve(false)
-      },
-    })
+    new Promise((resolve, reject) =>
+      confirm({
+        content: `This meeting will be automatically recorded for note taking purposes. After the meeting, ${companyData?.companyName} will get the recording. Contact them if you need further information.`,
+        icon: <ExclamationCircleOutlined />,
+        title: 'Meeting will be recorded',
+        okText: "Join Room",
+        cancelText: "Leave",
+        maskStyle: { backgroundColor: 'rgba(0,0,0,0.9' },
+
+        onOk() {
+          console.log("ok")
+          resolve(true)
+        },
+        onCancel() {
+          resolve(false)
+        },
+      })
     )
   )
 
@@ -176,37 +174,35 @@ export default function MenuBar() {
         {roomState === 'disconnected' ? (
           <form className={classes.form} onSubmit={handleSubmit}>
 
-{isMobile ? 
-<div>
-              <TextField
-                id="menu-name"
-                label="Enter Name to Join"
-                className={classes.textField}
-                value={name}
-                onChange={handleNameChange}
-                margin="dense"
-              />
- 
+            {isMobile ?
+              <div>
+                <TextField
+                  id="menu-name"
+                  label="Enter Name to Join"
+                  className={classes.textField}
+                  value={name}
+                  onChange={handleNameChange}
+                  margin="dense"
+                />
 
 
-            <Button
-              className={classes.joinButton}
-              type="submit"
-              color="primary"
-              variant="contained"
-              disabled={isConnecting || !name || !roomName || isFetching}
-            >
-              Join Room
+
+                <Button
+                  className={classes.joinButton}
+                  type="submit"
+                  color="primary"
+                  variant="contained"
+                  disabled={isConnecting || !name || !roomName || isFetching}
+                >
+                  Join Room
             </Button>
-            </div> : 
-              <img alt={value ? value!.companyName: "Company"} style={{ height: 40 }} src= { value ? value!.logo : ''} />
-}
+              </div> :
+              <img alt={companyData ? companyData!.companyName : "Company"} style={{ height: 40 }} src={companyData ? companyData!.logo : ''} />
+            }
             {(isConnecting || isFetching) && <CircularProgress className={classes.loadingSpinner} />}
           </form>
         ) : (
-            // null
-            <img alt={value ? value!.companyName: "Company"} style={{ height: 40 }} src= { value ? value!.logo : ''} />
-            // <h3>{roomName}</h3
+            <img alt={companyData ? companyData!.companyName : "Company"} style={{ height: 40 }} src={companyData ? companyData!.logo : ''} />
           )}
         <div className={classes.rightButtonContainer}>
           <FlipCameraButton />

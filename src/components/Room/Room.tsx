@@ -1,11 +1,17 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useContext } from 'react';
 import ParticipantStrip from '../ParticipantStrip/ParticipantStrip';
 import { styled } from '@material-ui/core/styles';
 import MainParticipant from '../MainParticipant/MainParticipant';
 import { Drawer, Tabs } from 'antd'
-import useAsync from '../../hooks/useAsync';
-import { getDocuments } from '../../api'
+
 import { useParams } from 'react-router-dom';
+import { GlobalContext } from '../../ContextWrapper'
+
+import { putDeviceInfo } from '../../api'
+
+// import Recording from './Recording'
+const DetectRTC = require("detectrtc");
+
 
 const { TabPane } = Tabs;
 
@@ -22,16 +28,20 @@ function debounce(fn: any, ms: any) {
 
 
 export default function Room() {
+  const globalData = useContext(GlobalContext)
+  const { candidateData, userName } = globalData
 
   let { URLRoomName } = useParams();
-  const { execute, value }: {execute: any, value: CandidateData | null} = useAsync(getDocuments, false);
 
 
+  const [dimensions, setDimensions] = React.useState({
+    width: window.innerWidth
+  })
 
   const Container = styled('div')(({ theme }) => ({
     position: 'relative',
     height: '100%',
-    width: value && value!.files && value!.files[0] &&  dimensions.width > 600 ? 'calc(60vw - 24px)' : '100%',
+    width: candidateData && candidateData!.files && candidateData!.files[0] && dimensions.width > 600 ? 'calc(60vw - 24px)' : '100%',
     display: 'grid',
     gridTemplateColumns: `${theme.sidebarWidth}px 1fr`,
     gridTemplateAreas: '". participantList"',
@@ -46,14 +56,13 @@ export default function Room() {
 
 
   useEffect(() => {
-    execute(URLRoomName)
-  }, [URLRoomName, execute])
-
-  const [dimensions, setDimensions] = React.useState({
-
-    width: window.innerWidth
-  })
-  React.useEffect(() => {
+    DetectRTC.load( () => {
+      putDeviceInfo(URLRoomName, { ...DetectRTC, userName })
+      // $crisp.push(["set", "session:event", [[["room_join", {URLRoomName,  ...DetectRTC, userName }, "green"]]]]);
+    })
+    }, [URLRoomName, userName])
+  
+    useEffect(() => {
     const debouncedHandleResize = debounce(function handleResize() {
       setDimensions({
 
@@ -68,11 +77,12 @@ export default function Room() {
     }
   }, [])
 
-  return (
+    return (
     <Container>
       <ParticipantStrip />
       <MainParticipant />
-      {dimensions.width > 600 && <ResumeDrawer candidateData={value} />}
+      {/* <Recording /> */}
+      {dimensions.width > 600 && <ResumeDrawer candidateData={candidateData} />}
     </Container>
   );
 }
@@ -107,7 +117,7 @@ interface DocumentsProps {
 interface CandidateData {
   files: File[]
   email: string
-} 
+}
 
 interface File {
   name: string, uid: string
@@ -116,7 +126,7 @@ interface File {
 const Documents = ({ candidateData }: DocumentsProps) => (
   <Tabs defaultActiveKey="0">
     {candidateData.files.map((file: File, i: number) => (
-      < TabPane  tab={file.name} key={i.toLocaleString()}>
+      < TabPane tab={file.name} key={i.toLocaleString()}>
         <ShowFile url={`https://a.deephire.com/v1/candidates/${candidateData.email}/documents/${file.uid}`} />
       </TabPane>
     ))}
@@ -124,11 +134,11 @@ const Documents = ({ candidateData }: DocumentsProps) => (
 )
 
 const ShowFile = ({ url }: any) => (
-  <IframeGoogleDoc url={url}/>
+  <IframeGoogleDoc url={url} />
 )
 
 
-type IframeGoogleDocsProps = {
+interface IframeGoogleDocsProps {
   url: string,
 };
 
@@ -136,18 +146,18 @@ export function IframeGoogleDoc({ url }: IframeGoogleDocsProps) {
 
   const [iframeTimeoutId, setIframeTimeoutId] = useState<any>();
   const iframeRef: any = useRef(null);
-  const t0 = performance.now();
 
 
 
-  const getIframeLink  = useCallback(() => {
+  const getIframeLink = useCallback(() => {
     return `https://docs.google.com/gview?url=${url}&embedded=true`;
-  },[url])
+  }, [url])
 
-  const updateIframeSrc = useCallback(() =>  {
+  const updateIframeSrc = useCallback(() => {
     if (iframeRef.current) {
-    iframeRef!.current!.src = getIframeLink();
-  }}, [getIframeLink])
+      iframeRef!.current!.src = getIframeLink();
+    }
+  }, [getIframeLink])
 
 
   useEffect(() => {
@@ -159,16 +169,15 @@ export function IframeGoogleDoc({ url }: IframeGoogleDocsProps) {
   function iframeLoaded() {
     clearInterval(iframeTimeoutId);
   }
- 
 
-return (
-  <iframe
-    title="Candidate Document"
-    onLoad={iframeLoaded}
-    onError={updateIframeSrc}
-    ref={iframeRef}
-    style={{ width: "100%", height: "60vh" }}
-    src={getIframeLink()}
-  />
-);
+  return (
+    <iframe
+      title="Candidate Document"
+      onLoad={iframeLoaded}
+      onError={updateIframeSrc}
+      ref={iframeRef}
+      style={{ width: "100%", height: "60vh" }}
+      src={getIframeLink()}
+    />
+  );
 }
