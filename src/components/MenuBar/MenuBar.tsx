@@ -17,7 +17,6 @@ import useRoomState from '../../hooks/useRoomState/useRoomState';
 
 import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
 import FlipCameraButton from './FlipCameraButton/FlipCameraButton';
-import { DeviceSelector } from './DeviceSelector/DeviceSelector';
 import { GlobalContext } from '../../ContextWrapper';
 import { Modal } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';

@@ -3,7 +3,7 @@ import AboutDialog from '../AboutDialog/AboutDialog';
 import IconButton from '@material-ui/core/IconButton';
 import MenuContainer from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import MoreIcon from '@material-ui/icons/MoreVert';
+import MoreIcon from '@material-ui/icons/Settings';
 import SettingsDialog from '../SettingsDialog/SettingsDialog';
 import UserAvatar from '../UserAvatar/UserAvatar';
 
@@ -28,7 +28,7 @@ export default function Menu() {
 
   return (
     <div ref={anchorRef}>
-      <IconButton color="inherit" onClick={() => setMenuOpen(state => !state)}>
+      <IconButton onClick={() => setMenuOpen(state => !state)}>
         {user ? <UserAvatar user={user} /> : <MoreIcon />}
       </IconButton>
       <MenuContainer open={menuOpen} onClose={() => setMenuOpen(state => !state)} anchorEl={anchorRef.current}>
