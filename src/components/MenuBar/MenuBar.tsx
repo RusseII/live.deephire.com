@@ -18,12 +18,13 @@ import useRoomState from '../../hooks/useRoomState/useRoomState';
 import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
 import FlipCameraButton from './FlipCameraButton/FlipCameraButton';
 import { DeviceSelector } from './DeviceSelector/DeviceSelector';
-import { GlobalContext } from '../../ContextWrapper'
-import { Modal } from 'antd'
-import { ExclamationCircleOutlined } from '@ant-design/icons'
+import { GlobalContext } from '../../ContextWrapper';
+import { Modal } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+
+import LocalAudioLevelIndicator from './DeviceSelector/LocalAudioLevelIndicator/LocalAudioLevelIndicator';
 
 const { confirm } = Modal;
-
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -68,18 +69,12 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-
-
 export default function MenuBar() {
-
-  const globalData = useContext(GlobalContext)
-  const { companyData, setUserName } = globalData
+  const globalData = useContext(GlobalContext);
+  const { companyData, setUserName } = globalData;
 
   const classes = useStyles();
   let { URLRoomName } = useParams();
-
-
-
 
   if (!URLRoomName) {
     URLRoomName = window.sessionStorage.getItem('room') || '';
@@ -88,22 +83,19 @@ export default function MenuBar() {
   const URLUserName = window.sessionStorage.getItem('user') || '';
 
   const { user, getToken, isFetching } = useAppState();
-  const { isConnecting, connect } = useVideoContext();
+  const { isConnecting, connect, isAcquiringLocalTracks } = useVideoContext();
   const roomState = useRoomState();
 
   const [name, setName] = useState<string>(user?.displayName || '');
   const [roomName, setRoomName] = useState<string>('');
 
-
-
   interface valueProps {
-    execute: () => null
+    execute: () => null;
     value: {
-      companyName: string
-      logo: string
-    }
+      companyName: string;
+      logo: string;
+    };
   }
-
 
   useEffect(() => {
     if (URLRoomName) {
@@ -117,7 +109,6 @@ export default function MenuBar() {
     if (URLRoomName && URLUserName) {
       getToken(URLUserName, URLRoomName).then(token => connect(token));
     }
-
   }, [URLRoomName, URLUserName, connect, getToken, setUserName]);
 
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -131,9 +122,8 @@ export default function MenuBar() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-
-    const confirmation = await showConfirm()
-    if (!confirmation) return
+    const confirmation = await showConfirm();
+    if (!confirmation) return;
 
     Modal.destroyAll();
 
@@ -141,31 +131,29 @@ export default function MenuBar() {
     if (!window.location.origin.includes('twil.io')) {
       window.history.replaceState(null, '', window.encodeURI(`/room/${roomName}${window.location.search || ''}`));
     }
-    setUserName(URLUserName)
+    setUserName(URLUserName);
     getToken(name, roomName).then(token => connect(token));
   };
 
-
-  const showConfirm = async () => (
+  const showConfirm = async () =>
     new Promise((resolve, reject) =>
       confirm({
         content: `This meeting will be automatically recorded for note taking purposes. After the meeting, ${companyData?.companyName} will get the recording. Contact them if you need further information.`,
         icon: <ExclamationCircleOutlined />,
         title: 'Meeting will be recorded',
-        okText: "Join Room",
-        cancelText: "Leave",
+        okText: 'Join Room',
+        cancelText: 'Leave',
         maskStyle: { backgroundColor: 'rgba(0,0,0,0.9' },
 
         onOk() {
-          console.log("ok")
-          resolve(true)
+          console.log('ok');
+          resolve(true);
         },
         onCancel() {
-          resolve(false)
+          resolve(false);
         },
       })
-    )
-  )
+    );
 
   return (
     <AppBar className={classes.container} position="static">
@@ -173,8 +161,7 @@ export default function MenuBar() {
       <Toolbar className={classes.toolbar}>
         {roomState === 'disconnected' ? (
           <form className={classes.form} onSubmit={handleSubmit}>
-
-            {isMobile ?
+            {isMobile ? (
               <div>
                 <TextField
                   id="menu-name"
@@ -185,8 +172,6 @@ export default function MenuBar() {
                   margin="dense"
                 />
 
-
-
                 <Button
                   className={classes.joinButton}
                   type="submit"
@@ -195,18 +180,27 @@ export default function MenuBar() {
                   disabled={isConnecting || !name || !roomName || isFetching}
                 >
                   Join Room
-            </Button>
-              </div> :
-              <img alt={companyData ? companyData!.companyName : "Company"} style={{ height: 40 }} src={companyData ? companyData!.logo : ''} />
-            }
+                </Button>
+              </div>
+            ) : (
+              <img
+                alt={companyData ? companyData!.companyName : 'Company'}
+                style={{ height: 40 }}
+                src={companyData ? companyData!.logo : ''}
+              />
+            )}
             {(isConnecting || isFetching) && <CircularProgress className={classes.loadingSpinner} />}
           </form>
         ) : (
-            <img alt={companyData ? companyData!.companyName : "Company"} style={{ height: 40 }} src={companyData ? companyData!.logo : ''} />
-          )}
+          <img
+            alt={companyData ? companyData!.companyName : 'Company'}
+            style={{ height: 40 }}
+            src={companyData ? companyData!.logo : ''}
+          />
+        )}
         <div className={classes.rightButtonContainer}>
           <FlipCameraButton />
-          <DeviceSelector />
+          <LocalAudioLevelIndicator />
           <ToggleFullscreenButton />
           <Menu />
         </div>
