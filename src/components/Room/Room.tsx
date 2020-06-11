@@ -2,46 +2,45 @@ import React, { useEffect, useRef, useState, useCallback, useContext } from 'rea
 import ParticipantStrip from '../ParticipantStrip/ParticipantStrip';
 import { styled } from '@material-ui/core/styles';
 import MainParticipant from '../MainParticipant/MainParticipant';
-import { Drawer, Tabs } from 'antd'
+import { Drawer, Tabs } from 'antd';
 
 import { useParams } from 'react-router-dom';
-import { GlobalContext } from '../../ContextWrapper'
+import { GlobalContext } from '../../ContextWrapper';
 
-import { putDeviceInfo } from '../../api'
+import { putDeviceInfo } from '../../api';
 
-// import Recording from './Recording'
-const DetectRTC = require("detectrtc");
-
+const DetectRTC = require('detectrtc');
 
 const { TabPane } = Tabs;
 
 function debounce(fn: any, ms: any) {
   let timer: any;
-  return function (this: typeof debounce) {
-    clearTimeout(timer)
+  return function(this: typeof debounce) {
+    clearTimeout(timer);
     timer = setTimeout(_ => {
-      timer = null
-      fn.apply(this, arguments)
-    }, ms)
+      timer = null;
+      fn.apply(this, arguments);
+    }, ms);
   };
 }
 
-
 export default function Room() {
-  const globalData = useContext(GlobalContext)
-  const { candidateData, userName } = globalData
+  const globalData = useContext(GlobalContext);
+  const { candidateData, userName } = globalData;
 
   let { URLRoomName } = useParams();
 
-
   const [dimensions, setDimensions] = React.useState({
-    width: window.innerWidth
-  })
+    width: window.innerWidth,
+  });
 
   const Container = styled('div')(({ theme }) => ({
     position: 'relative',
     height: '100%',
-    width: candidateData && candidateData!.files && candidateData!.files[0] && dimensions.width > 600 ? 'calc(60vw - 24px)' : '100%',
+    width:
+      candidateData && candidateData!.files && candidateData!.files[0] && dimensions.width > 600
+        ? 'calc(60vw - 24px)'
+        : '100%',
     display: 'grid',
     gridTemplateColumns: `${theme.sidebarWidth}px 1fr`,
     gridTemplateAreas: '". participantList"',
@@ -54,42 +53,38 @@ export default function Room() {
     },
   }));
 
+  useEffect(() => {
+    DetectRTC.load(() => {
+      putDeviceInfo(URLRoomName, { ...DetectRTC, userName });
+      // $crisp.push(["set", "session:event", [[["room_join", {URLRoomName,  ...DetectRTC, userName }, "green"]]]]);
+    });
+  }, [URLRoomName, userName]);
 
   useEffect(() => {
-    DetectRTC.load( () => {
-      putDeviceInfo(URLRoomName, { ...DetectRTC, userName })
-      // $crisp.push(["set", "session:event", [[["room_join", {URLRoomName,  ...DetectRTC, userName }, "green"]]]]);
-    })
-    }, [URLRoomName, userName])
-  
-    useEffect(() => {
     const debouncedHandleResize = debounce(function handleResize() {
       setDimensions({
+        width: window.innerWidth,
+      });
+    }, 1000);
 
-        width: window.innerWidth
-      })
-    }, 1000)
-
-    window.addEventListener('resize', debouncedHandleResize)
+    window.addEventListener('resize', debouncedHandleResize);
 
     return () => {
       window.removeEventListener('resize', debouncedHandleResize);
-    }
-  }, [])
+    };
+  }, []);
 
-    return (
+  return (
     <Container>
       <ParticipantStrip />
       <MainParticipant />
-      {/* <Recording /> */}
       {dimensions.width > 600 && <ResumeDrawer candidateData={candidateData} />}
     </Container>
   );
 }
 
-
 interface ResumeDrawerProps {
-  candidateData: CandidateData | null
+  candidateData: CandidateData | null;
 }
 
 const ResumeDrawer = ({ candidateData }: ResumeDrawerProps) => {
@@ -104,67 +99,61 @@ const ResumeDrawer = ({ candidateData }: ResumeDrawerProps) => {
         placement="right"
         closable={true}
         visible={true}
-      ><Documents candidateData={candidateData} /></Drawer>)
+      >
+        <Documents candidateData={candidateData} />
+      </Drawer>
+    );
   }
-  return null
-
-}
-
+  return null;
+};
 
 interface DocumentsProps {
-  candidateData: CandidateData
+  candidateData: CandidateData;
 }
 interface CandidateData {
-  files: File[]
-  email: string
+  files: File[];
+  email: string;
 }
 
 interface File {
-  name: string, uid: string
+  name: string;
+  uid: string;
 }
 
 const Documents = ({ candidateData }: DocumentsProps) => (
   <Tabs defaultActiveKey="0">
     {candidateData.files.map((file: File, i: number) => (
-      < TabPane tab={file.name} key={i.toLocaleString()}>
+      <TabPane tab={file.name} key={i.toLocaleString()}>
         <ShowFile url={`https://a.deephire.com/v1/candidates/${candidateData.email}/documents/${file.uid}`} />
       </TabPane>
     ))}
-  </Tabs >
-)
+  </Tabs>
+);
 
-const ShowFile = ({ url }: any) => (
-  <IframeGoogleDoc url={url} />
-)
-
+const ShowFile = ({ url }: any) => <IframeGoogleDoc url={url} />;
 
 interface IframeGoogleDocsProps {
-  url: string,
-};
+  url: string;
+}
 
 export function IframeGoogleDoc({ url }: IframeGoogleDocsProps) {
-
   const [iframeTimeoutId, setIframeTimeoutId] = useState<any>();
   const iframeRef: any = useRef(null);
 
-
-
   const getIframeLink = useCallback(() => {
     return `https://docs.google.com/gview?url=${url}&embedded=true`;
-  }, [url])
+  }, [url]);
 
   const updateIframeSrc = useCallback(() => {
     if (iframeRef.current) {
       iframeRef!.current!.src = getIframeLink();
     }
-  }, [getIframeLink])
-
+  }, [getIframeLink]);
 
   useEffect(() => {
-    const intervalId = setInterval(
-      updateIframeSrc, 1000 * 20)
-    setIframeTimeoutId(intervalId)
-  }, [updateIframeSrc])
+    const intervalId = setInterval(updateIframeSrc, 1000 * 20);
+    setIframeTimeoutId(intervalId);
+  }, [updateIframeSrc]);
 
   function iframeLoaded() {
     clearInterval(iframeTimeoutId);
@@ -176,7 +165,7 @@ export function IframeGoogleDoc({ url }: IframeGoogleDocsProps) {
       onLoad={iframeLoaded}
       onError={updateIframeSrc}
       ref={iframeRef}
-      style={{ width: "100%", height: "60vh" }}
+      style={{ width: '100%', height: '60vh' }}
       src={getIframeLink()}
     />
   );

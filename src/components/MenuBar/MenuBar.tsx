@@ -20,6 +20,7 @@ import FlipCameraButton from './FlipCameraButton/FlipCameraButton';
 import { GlobalContext } from '../../ContextWrapper';
 import { Modal } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import RecordingIcon from './Recording';
 
 import LocalAudioLevelIndicator from './DeviceSelector/LocalAudioLevelIndicator/LocalAudioLevelIndicator';
 
@@ -198,8 +199,11 @@ export default function MenuBar() {
           />
         )}
         <div className={classes.rightButtonContainer}>
+          {roomState !== 'disconnected' && <RecordingIcon style={{ marginRight: 8, marginLeft: 16 }} />}
+          {console.log(roomState)}
           <FlipCameraButton />
           <LocalAudioLevelIndicator />
+          <div style={{ width: 8 }} />
           <ToggleFullscreenButton />
           <Menu />
         </div>
