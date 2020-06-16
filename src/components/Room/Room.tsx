@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback, useContext } from 'rea
 import ParticipantStrip from '../ParticipantStrip/ParticipantStrip';
 import { styled } from '@material-ui/core/styles';
 import MainParticipant from '../MainParticipant/MainParticipant';
-import { Drawer, Tabs } from 'antd';
+import { Drawer, Tabs, Input } from 'antd';
 
 import { useParams } from 'react-router-dom';
 import { GlobalContext } from '../../ContextWrapper';
@@ -12,6 +12,7 @@ import { putDeviceInfo } from '../../api';
 const DetectRTC = require('detectrtc');
 
 const { TabPane } = Tabs;
+const { TextArea } = Input;
 
 function debounce(fn: any, ms: any) {
   let timer: any;
@@ -78,16 +79,17 @@ export default function Room() {
     <Container>
       <ParticipantStrip />
       <MainParticipant />
-      {dimensions.width > 600 && <ResumeDrawer candidateData={candidateData} />}
+      {<ResumeDrawer candidateData={candidateData} userName={userName} />}
     </Container>
   );
 }
 
 interface ResumeDrawerProps {
   candidateData: CandidateData | null;
+  userName: string | null;
 }
 
-const ResumeDrawer = ({ candidateData }: ResumeDrawerProps) => {
+const ResumeDrawer = ({ candidateData, userName }: ResumeDrawerProps) => {
   if (candidateData && candidateData.files && candidateData.files[0]) {
     return (
       <Drawer
@@ -100,7 +102,7 @@ const ResumeDrawer = ({ candidateData }: ResumeDrawerProps) => {
         closable={true}
         visible={true}
       >
-        <Documents candidateData={candidateData} />
+        <Documents candidateData={candidateData} userName={userName} />
       </Drawer>
     );
   }
@@ -109,6 +111,7 @@ const ResumeDrawer = ({ candidateData }: ResumeDrawerProps) => {
 
 interface DocumentsProps {
   candidateData: CandidateData;
+  userName: string | null;
 }
 interface CandidateData {
   files: File[];
@@ -120,10 +123,18 @@ interface File {
   uid: string;
 }
 
-const Documents = ({ candidateData }: DocumentsProps) => (
+const Documents = ({ candidateData, userName }: DocumentsProps) => (
   <Tabs defaultActiveKey="0">
+    {userName && userName.toLowerCase() === 'steven gates' && (
+      <TabPane tab="Notes" key="0">
+        <TextArea
+          placeholder="Enter notes about the interview. This will be saved along with the recording after the interview."
+          rows={8}
+        />
+      </TabPane>
+    )}
     {candidateData.files.map((file: File, i: number) => (
-      <TabPane tab={file.name} key={i.toLocaleString()}>
+      <TabPane tab={file.name} key={i.toLocaleString() + 1}>
         <ShowFile url={`https://a.deephire.com/v1/candidates/${candidateData.email}/documents/${file.uid}`} />
       </TabPane>
     ))}
