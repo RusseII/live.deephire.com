@@ -186,7 +186,7 @@ export default function MenuBar() {
               <img
                 alt={companyData ? companyData!.companyName : 'Company'}
                 style={{ height: 40 }}
-                src={companyData ? companyData!.logo : ''}
+                src={companyData ? companyData!.logo : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D'}
               />
             )}
             {(isConnecting || isFetching) && <CircularProgress className={classes.loadingSpinner} />}
