@@ -7,6 +7,8 @@ import { Drawer, Tabs, Input } from 'antd';
 import { useParams } from 'react-router-dom';
 import { GlobalContext } from '../../ContextWrapper';
 
+import { isMobile } from '../../utils';
+
 import { putDeviceInfo } from '../../api';
 
 const DetectRTC = require('detectrtc');
@@ -90,7 +92,7 @@ interface ResumeDrawerProps {
 }
 
 const ResumeDrawer = ({ candidateData, userName }: ResumeDrawerProps) => {
-  if (candidateData && candidateData.files && candidateData.files[0]) {
+  if (!isMobile && candidateData && candidateData.files && candidateData.files[0]) {
     return (
       <Drawer
         mask={false}
