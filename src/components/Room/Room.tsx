@@ -178,7 +178,7 @@ export function IframeGoogleDoc({ url }: IframeGoogleDocsProps) {
       onLoad={iframeLoaded}
       onError={updateIframeSrc}
       ref={iframeRef}
-      style={{ width: '100%', height: '60vh' }}
+      style={{ width: '100%', height: 'calc(100vh - (48px + 64px + 46px))' }}
       src={getIframeLink()}
     />
   );
