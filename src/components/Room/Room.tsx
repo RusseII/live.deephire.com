@@ -59,8 +59,41 @@ export default function Room() {
 
   useEffect(() => {
     DetectRTC.load(() => {
-      putDeviceInfo(URLRoomName, { ...DetectRTC, userName });
-      // $crisp.push(["set", "session:event", [[["room_join", {URLRoomName,  ...DetectRTC, userName }, "green"]]]]);
+      const {
+        browser,
+        displayResolution,
+        displayAspectRatio,
+        osName,
+        osVersion,
+        isWebsiteHasWebcamPermissions,
+        isWebsiteHasMicrophonePermissions,
+        isWebRTCSupported,
+        hasWebcam,
+        hasSpeakers,
+        hasMicrophone,
+      } = DetectRTC;
+      const usefulData = {
+        ...browser,
+        displayResolution,
+        displayAspectRatio,
+        osName,
+        osVersion,
+        isWebsiteHasWebcamPermissions,
+        isWebsiteHasMicrophonePermissions,
+        isWebRTCSupported,
+        hasWebcam,
+        hasSpeakers,
+        hasMicrophone,
+      };
+      putDeviceInfo(URLRoomName, { ...usefulData, userName });
+
+      (window as any).$crisp.push(['set', 'user:nickname', [userName]]);
+      (window as any).$crisp.push(['set', 'session:segments', [['live-interview']]]);
+      (window as any).$crisp.push([
+        'set',
+        'session:event',
+        [[['room_join', { URLRoomName, ...usefulData, userName }, 'green']]],
+      ]);
     });
   }, [URLRoomName, userName]);
 
