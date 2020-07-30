@@ -45,6 +45,7 @@ export default function Room() {
         ? 'calc(60vw - 24px)'
         : '100%',
     display: 'grid',
+    gridGap: '16px',
     gridTemplateColumns: `${theme.sidebarWidth}px 1fr`,
     gridTemplateAreas: '". participantList"',
     gridTemplateRows: '100%',
