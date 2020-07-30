@@ -45,6 +45,7 @@ export default function Room() {
         ? 'calc(60vw - 24px)'
         : '100%',
     display: 'grid',
+    gridGap: '16px',
     gridTemplateColumns: `${theme.sidebarWidth}px 1fr`,
     gridTemplateAreas: '". participantList"',
     gridTemplateRows: '100%',
@@ -178,7 +179,7 @@ export function IframeGoogleDoc({ url }: IframeGoogleDocsProps) {
       onLoad={iframeLoaded}
       onError={updateIframeSrc}
       ref={iframeRef}
-      style={{ width: '100%', height: '60vh' }}
+      style={{ width: '100%', height: 'calc(100vh - (48px + 64px + 46px))' }}
       src={getIframeLink()}
     />
   );
