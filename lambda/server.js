@@ -11,25 +11,48 @@ const twilioApiKeySecret = process.env.TWILIO_API_KEY_SECRET;
 const client = require('twilio')(twilioApiKeySID, twilioApiKeySecret, { accountSid: twilioAccountSid });
 
 
+const createP2pRoom = async (roomName) => {
+
+  const room = await client.video.rooms
+    .create({
+      enableTurn: true,
+      // recordParticipantsOnConnect: false,
+      statusCallback: 'https://a.deephire.com/v1/live/events',
+      type: 'peer-to-peer',
+      uniqueName: roomName,
+      maxParticipants: 10,
+    })
+
+  console.log("Created p2p room ", room)
+}
+
 const createRoom = async (roomName) => {
-  try { 
+  try {
     const currentRoom = await client.video.rooms(roomName).fetch()
     console.log("Room Exists", currentRoom)
   }
-  catch(err) {
+  catch (err) {
     console.log(err)
     if (err.status === 404) {
-    // room does not exist, so create it. 
-    const room = await client.video.rooms
-      .create({
-        recordParticipantsOnConnect: true,
-        statusCallback: 'https://a.deephire.com/v1/live/events',
-        type: 'group-small',
-        uniqueName: roomName
-      })
-    console.log("room created", room)
+
+      if (roomName === '5f230331c143e6001aa40300') {
+        createP2pRoom(roomName)
+      }
+      else {
+
+
+        // room does not exist, so create it. 
+        const room = await client.video.rooms
+          .create({
+            recordParticipantsOnConnect: true,
+            statusCallback: 'https://a.deephire.com/v1/live/events',
+            type: 'group-small',
+            uniqueName: roomName
+          })
+        console.log("room created", room)
+      }
+    }
   }
-}
 }
 module.exports.handler = (context, event, callback) => {
   console.log("context", context)
