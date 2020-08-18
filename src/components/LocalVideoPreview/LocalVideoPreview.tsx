@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { LocalVideoTrack } from 'twilio-video';
 import VideoTrack from '../VideoTrack/VideoTrack';
 import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
-import { Col, Row, Typography, Button, Form, Input } from 'antd';
+import { Col, Row, Typography, Button, Form, Input, Radio } from 'antd';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { isMobile } from '../../utils';
 
@@ -14,6 +14,12 @@ import useRoomState from '../../hooks/useRoomState/useRoomState';
 
 import { Modal } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+
+const radioStyle = {
+  display: 'block',
+  height: '30px',
+  lineHeight: '30px',
+};
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -57,7 +63,9 @@ export default function LocalVideoPreview() {
   }, [URLRoomName, URLUserName, connect, getToken, setUserName]);
 
   const handleSubmit = async (values: any) => {
-    const { name } = values;
+    console.log(values, 'values');
+    const { name, selectedName } = values;
+    const usableName = name || selectedName;
 
     const confirmation = await showConfirm();
     if (!confirmation) return;
@@ -68,8 +76,8 @@ export default function LocalVideoPreview() {
     if (!window.location.origin.includes('twil.io')) {
       window.history.replaceState(null, '', window.encodeURI(`/room/${roomName}${window.location.search || ''}`));
     }
-    setUserName(name);
-    getToken(name, roomName).then(token => connect(token));
+    setUserName(usableName);
+    getToken(usableName, roomName).then(token => connect(token));
   };
 
   const showConfirm = async () =>
@@ -95,26 +103,68 @@ export default function LocalVideoPreview() {
   const videoTrack = localTracks.find(track => track.name.includes('camera')) as LocalVideoTrack;
 
   const JoinPart = () => {
+    const [radioValue, setRadioValue] = useState(null);
+    const [nameInput, setNameInput] = useState('');
+
+    const { candidateName, clientName, recruiterName } = liveData || {};
     return (
-      <Col xs={24} sm={24} md={10}>
-        <Row justify="center">
-          <Typography.Title level={2}>Ready to Join?</Typography.Title>
-        </Row>
-        <Row justify="center">
+      <Col style={{ display: 'flex', justifyContent: 'center' }} xs={24} sm={24} md={10}>
+        <div style={{ width: 215 }}>
+          <Row>
+            <Typography.Title level={2}>Ready to Join?</Typography.Title>
+          </Row>
+          {/* <Row >
           <Typography.Paragraph>{`${companyData?.companyName ? companyData?.companyName + ',' : ''} ${
             liveData?.jobName ? liveData.jobName + ',' : ''
           } ${liveData?.candidateName ? liveData?.candidateName : ''}`}</Typography.Paragraph>
-        </Row>
-        <Form style={{ textAlign: 'center', marginTop: 12 }} onFinish={handleSubmit}>
-          <Form.Item name="name" rules={[{ required: true, message: 'Please input your name!' }]}>
+        </Row> */}
+          <Form labelCol={{ span: 24 }} hideRequiredMark onFinish={handleSubmit}>
+            <Form.Item
+              name="selectedName"
+              label="Select your name below"
+              rules={[{ required: true, message: 'Please select your name above!' }]}
+            >
+              <Radio.Group onChange={e => setRadioValue(e.target.value)}>
+                {candidateName && (
+                  <Radio style={radioStyle} value={candidateName}>
+                    {candidateName}
+                  </Radio>
+                )}
+                {clientName && (
+                  <Radio style={radioStyle} value={clientName}>
+                    {clientName}
+                  </Radio>
+                )}
+                {recruiterName && (
+                  <Radio style={radioStyle} value={recruiterName}>
+                    {recruiterName}
+                  </Radio>
+                )}
+                <Radio style={radioStyle} value={4}>
+                  Enter Name...
+                  {radioValue === 4 ? (
+                    <Form.Item name="name" noStyle rules={[{ required: true, message: 'Please input your name' }]}>
+                      <Input
+                        placeholder="Enter your name"
+                        style={{ width: 150, marginLeft: 10 }}
+                        value={nameInput}
+                        onChange={e => setNameInput(e.target.value)}
+                      />
+                    </Form.Item>
+                  ) : null}
+                </Radio>
+              </Radio.Group>
+            </Form.Item>
+            {/* <Form.Item name="name" rules={[{ required: true, message: 'Please input your name!' }]}>
             <Input style={{ maxWidth: 200 }} placeholder="Enter your name" />
-          </Form.Item>
-          <Form.Item>
-            <Button loading={isFetching || isConnecting} type="primary" htmlType="submit">
-              Join Room
-            </Button>
-          </Form.Item>
-        </Form>
+          </Form.Item> */}
+            <Form.Item>
+              <Button loading={isFetching || isConnecting} type="primary" htmlType="submit">
+                Join Room
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
         {/* <Row justify='center'><Input style={{maxWidth: 200, marginBottom:24}} placeholder="Name"></Input></Row>
       
       <Row justify='center'><Button onClick={(e: any) => handleSubmit(e)} type='primary'>Join Room</Button></Row> */}
