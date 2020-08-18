@@ -97,19 +97,19 @@ export default function Room() {
     });
   }, [URLRoomName, userName]);
 
-  useEffect(() => {
-    const debouncedHandleResize = debounce(function handleResize() {
-      setDimensions({
-        width: window.innerWidth,
-      });
-    }, 1000);
+  // useEffect(() => {
+  //   const debouncedHandleResize = debounce(function handleResize() {
+  //     setDimensions({
+  //       width: window.innerWidth,
+  //     });
+  //   }, 1000);
 
-    window.addEventListener('resize', debouncedHandleResize);
+  //   window.addEventListener('resize', debouncedHandleResize);
 
-    return () => {
-      window.removeEventListener('resize', debouncedHandleResize);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener('resize', debouncedHandleResize);
+  //   };
+  // }, []);
 
   return (
     <Container>
