@@ -34,12 +34,21 @@ export default function App() {
 
   return (
     <Container style={{ height }}>
-      <MenuBar />
-      <Main>
-        {roomState === 'disconnected' ? <LocalVideoPreview /> : <Room />}
-        <Controls />
-      </Main>
-      <ReconnectingNotification />
+      <Data roomState={roomState}></Data>
     </Container>
   );
 }
+
+// componentShouldUpdate only when roomState changes
+const Data = React.memo((props: { roomState: string }) => {
+  return (
+    <>
+      <MenuBar />
+      <Main>
+        {props.roomState === 'disconnected' ? <LocalVideoPreview /> : <Room />}
+        <Controls />
+      </Main>
+      <ReconnectingNotification />
+    </>
+  );
+});
