@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState, useCallback, useContext } from 'rea
 import ParticipantStrip from '../ParticipantStrip/ParticipantStrip';
 import { styled } from '@material-ui/core/styles';
 import MainParticipant from '../MainParticipant/MainParticipant';
-import { Drawer, Tabs, Input } from 'antd';
+import { Tabs, Input, Button } from 'antd';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 import { useParams } from 'react-router-dom';
 import { GlobalContext } from '../../ContextWrapper';
-
 import { isMobile } from '../../utils';
 
 import { putDeviceInfo } from '../../api';
@@ -16,39 +17,22 @@ const DetectRTC = require('detectrtc');
 const { TabPane } = Tabs;
 const { TextArea } = Input;
 
-function debounce(fn: any, ms: any) {
-  let timer: any;
-  return function(this: typeof debounce) {
-    clearTimeout(timer);
-    timer = setTimeout(_ => {
-      timer = null;
-      fn.apply(this, arguments);
-    }, ms);
-  };
-}
-
 export default function Room() {
   const globalData = useContext(GlobalContext);
   const { candidateData, userName } = globalData;
 
   let { URLRoomName } = useParams();
 
-  const [dimensions, setDimensions] = React.useState({
-    width: window.innerWidth,
-  });
-
   const Container = styled('div')(({ theme }) => ({
     position: 'relative',
     height: '100%',
-    width:
-      candidateData && candidateData!.files && candidateData!.files[0] && dimensions.width > 600
-        ? 'calc(60vw - 24px)'
-        : '100%',
+    width: '100%',
     display: 'grid',
     gridGap: '16px',
-    gridTemplateColumns: `${theme.sidebarWidth}px 1fr`,
-    gridTemplateAreas: '". participantList"',
-    gridTemplateRows: '100%',
+    gridTemplateColumns: `${theme.sidebarWidth}px 1fr ${sidebarVisible ? '40vw' : '0px'}`,
+
+    gridTemplateAreas: '". participantList ."',
+    gridTemplateRows: '1fr',
     [theme.breakpoints.down('xs')]: {
       gridTemplateAreas: '"participantList" "."',
       gridTemplateColumns: `auto`,
@@ -97,53 +81,36 @@ export default function Room() {
     });
   }, [URLRoomName, userName]);
 
-  // useEffect(() => {
-  //   const debouncedHandleResize = debounce(function handleResize() {
-  //     setDimensions({
-  //       width: window.innerWidth,
-  //     });
-  //   }, 1000);
-
-  //   window.addEventListener('resize', debouncedHandleResize);
-
-  //   return () => {
-  //     window.removeEventListener('resize', debouncedHandleResize);
-  //   };
-  // }, []);
+  const [sidebarVisible, setSidebarVisible] = useState(
+    !!(!isMobile && candidateData && candidateData.files && candidateData.files[0])
+  );
 
   return (
     <Container>
       <ParticipantStrip />
-      <MainParticipant />
-      {<ResumeDrawer candidateData={candidateData} userName={userName} />}
+      <div style={{ marginBottom: 24 }}>
+        <MainParticipant />
+        <Button onClick={() => setSidebarVisible(flag => !flag)}>Toggle Sidebar</Button>
+
+        <Text></Text>
+      </div>
+      <div>{candidateData && <Documents candidateData={candidateData} userName={userName} />}</div>
+      <div></div>
     </Container>
   );
 }
 
+const Text = () => {
+  const [value, setValue] = useState('');
+
+  return <ReactQuill theme="snow" value={value} style={{ height: '100%' }} onChange={setValue} />;
+};
 interface ResumeDrawerProps {
   candidateData: CandidateData | null;
   userName: string | null;
+  visible: boolean;
+  setVisible: (visible: boolean) => void;
 }
-
-const ResumeDrawer = ({ candidateData, userName }: ResumeDrawerProps) => {
-  if (!isMobile && candidateData && candidateData.files && candidateData.files[0]) {
-    return (
-      <Drawer
-        mask={false}
-        width={'40vw'}
-        zIndex={0}
-        bodyStyle={{ backgroundColor: '#f1f2f5' }}
-        title="Basic Drawer"
-        placement="right"
-        closable={true}
-        visible={true}
-      >
-        <Documents candidateData={candidateData} userName={userName} />
-      </Drawer>
-    );
-  }
-  return null;
-};
 
 interface DocumentsProps {
   candidateData: CandidateData;

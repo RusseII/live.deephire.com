@@ -19,6 +19,7 @@ const radioStyle = {
   display: 'block',
   height: '30px',
   lineHeight: '30px',
+  width: 100,
 };
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -60,7 +61,12 @@ export default function LocalVideoPreview() {
     if (URLRoomName && URLUserName) {
       getToken(URLUserName, URLRoomName).then(token => connect(token));
     }
-  }, [URLRoomName, URLUserName, connect, getToken, setUserName]);
+  }, [URLRoomName, URLUserName, connect, getToken, roomName, setUserName]);
+
+  useEffect(() => {
+    setUserName('SKIP INTRO SCREEN');
+    getToken('SKIP INTRO SCREEN', roomName).then(token => connect(token));
+  }, []);
 
   const handleSubmit = async (values: any) => {
     console.log(values, 'values');
@@ -108,20 +114,23 @@ export default function LocalVideoPreview() {
 
     const { candidateName, clientName, recruiterName } = liveData || {};
     return (
-      <Col style={{ display: 'flex', justifyContent: 'center' }} xs={24} sm={24} md={10}>
-        <div style={{ width: 215 }}>
-          <Row>
-            <Typography.Title level={2}>Ready to Join?</Typography.Title>
-          </Row>
-          {/* <Row >
+      <Col xs={24} sm={24} md={7} lg={6}>
+        <Row style={{ justifyContent: 'center' }}>
+          <Typography.Title level={2}>Ready to Join?</Typography.Title>
+        </Row>
+        {/* <Row >
           <Typography.Paragraph>{`${companyData?.companyName ? companyData?.companyName + ',' : ''} ${
             liveData?.jobName ? liveData.jobName + ',' : ''
           } ${liveData?.candidateName ? liveData?.candidateName : ''}`}</Typography.Paragraph>
         </Row> */}
-          <Form labelCol={{ span: 24 }} hideRequiredMark onFinish={handleSubmit}>
+        <Row justify="center" style={{ marginBottom: 4 }}>
+          Select your name:
+        </Row>
+        <Row justify="center">
+          <Form hideRequiredMark onFinish={handleSubmit}>
             <Form.Item
               name="selectedName"
-              label="Select your name below"
+              // label="Select your name below"
               rules={[{ required: true, message: 'Please select your name above!' }]}
             >
               <Radio.Group onChange={e => setRadioValue(e.target.value)}>
@@ -164,7 +173,7 @@ export default function LocalVideoPreview() {
               </Button>
             </Form.Item>
           </Form>
-        </div>
+        </Row>
         {/* <Row justify='center'><Input style={{maxWidth: 200, marginBottom:24}} placeholder="Name"></Input></Row>
       
       <Row justify='center'><Button onClick={(e: any) => handleSubmit(e)} type='primary'>Join Room</Button></Row> */}
@@ -175,8 +184,8 @@ export default function LocalVideoPreview() {
   const PreviewRoom = ({ track }: any) => {
     return (
       <Row gutter={24} align="middle" className={classes.preview}>
-        <Col xs={2} sm={2} md={1}></Col>
-        <Col xs={20} sm={20} md={13}>
+        <Col xs={2} sm={2} md={2} lg={4}></Col>
+        <Col xs={20} sm={20} md={11} lg={9}>
           {track ? <VideoTrack track={track} isLocal /> : <NoVideo />}
         </Col>
         {!isMobile && <JoinPart />}
