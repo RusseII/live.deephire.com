@@ -1,7 +1,15 @@
-import React from 'react';
+import React, { useEffect, useContext } from 'react';
 import clsx from 'clsx';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { LocalAudioTrack, LocalVideoTrack, Participant, RemoteAudioTrack, RemoteVideoTrack } from 'twilio-video';
+import {
+  LocalAudioTrack,
+  LocalVideoTrack,
+  LocalDataTrack,
+  Participant,
+  RemoteAudioTrack,
+  RemoteVideoTrack,
+  RemoteDataTrack,
+} from 'twilio-video';
 
 import AudioLevelIndicator from '../AudioLevelIndicator/AudioLevelIndicator';
 import BandwidthWarning from '../BandwidthWarning/BandwidthWarning';
@@ -15,6 +23,8 @@ import useParticipantNetworkQualityLevel from '../../hooks/useParticipantNetwork
 import usePublications from '../../hooks/usePublications/usePublications';
 import useIsTrackSwitchedOff from '../../hooks/useIsTrackSwitchedOff/useIsTrackSwitchedOff';
 import useTrack from '../../hooks/useTrack/useTrack';
+import { GlobalContext } from '../../ContextWrapper';
+import { MessagesProps } from '../Chat/Chat';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -80,11 +90,12 @@ interface ParticipantInfoProps {
 }
 
 export default function ParticipantInfo({ participant, onClick, isSelected, children }: ParticipantInfoProps) {
+  const { setMessages } = useContext(GlobalContext);
   const publications = usePublications(participant);
 
   const audioPublication = publications.find(p => p.kind === 'audio');
   const videoPublication = publications.find(p => p.trackName.includes('camera'));
-
+  const dataPublication = publications.find(p => p.kind === 'data');
   const networkQualityLevel = useParticipantNetworkQualityLevel(participant);
   const isVideoEnabled = Boolean(videoPublication);
   const isScreenShareEnabled = publications.find(p => p.trackName.includes('screen'));
@@ -93,9 +104,19 @@ export default function ParticipantInfo({ participant, onClick, isSelected, chil
   const isVideoSwitchedOff = useIsTrackSwitchedOff(videoTrack as LocalVideoTrack | RemoteVideoTrack);
 
   const audioTrack = useTrack(audioPublication) as LocalAudioTrack | RemoteAudioTrack;
+  const dataTrack = useTrack(dataPublication) as LocalDataTrack | RemoteDataTrack;
 
   const classes = useStyles();
-
+  useEffect(() => {
+    if (dataTrack) {
+      console.log('subscribed to data track', dataTrack);
+      dataTrack.on('message', data => {
+        console.log('data', data);
+        setMessages!((oldMessages: MessagesProps[]) => [...oldMessages, JSON.parse(data)]);
+        console.log('Datatrack Data', data);
+      });
+    }
+  }, [dataTrack, setMessages]);
   return (
     <div
       className={clsx(classes.container, {

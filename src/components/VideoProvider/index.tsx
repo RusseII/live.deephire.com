@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode } from 'react';
+import React, { useEffect, useState, createContext, ReactNode } from 'react';
 import {
   CreateLocalTrackOptions,
   ConnectOptions,
@@ -6,6 +6,7 @@ import {
   LocalVideoTrack,
   Room,
   TwilioError,
+  LocalDataTrack,
 } from 'twilio-video';
 import { Callback, ErrorCallback } from '../../types';
 import { SelectedParticipantProvider } from './useSelectedParticipant/useSelectedParticipant';
@@ -26,6 +27,7 @@ import useRoom from './useRoom/useRoom';
 
 export interface IVideoContext {
   room: Room;
+  dataTrack: LocalDataTrack;
   localTracks: (LocalAudioTrack | LocalVideoTrack)[];
   isConnecting: boolean;
   connect: (token: string) => Promise<void>;
@@ -58,8 +60,18 @@ export function VideoProvider({ options, children, onError = () => {}, onDisconn
     getLocalAudioTrack,
     isAcquiringLocalTracks,
     removeLocalVideoTrack,
+    dataTrack,
   } = useLocalTracks();
-  const { room, isConnecting, connect } = useRoom(localTracks, onErrorCallback, options);
+
+  // useEffect(() => {
+  //   if (dataTrack) {
+  //     setInterval(() => {
+  //       console.log("sent track msg", dataTrack)
+  //       dataTrack.send("hey")}
+  //       , 1000)
+  //   }
+  // }, [dataTrack])
+  const { room, isConnecting, connect } = useRoom([...localTracks, dataTrack], onErrorCallback, options);
 
   // Register onError and onDisconnect callback functions.
   useHandleRoomDisconnectionErrors(room, onError);
@@ -70,6 +82,7 @@ export function VideoProvider({ options, children, onError = () => {}, onDisconn
     <VideoContext.Provider
       value={{
         room,
+        dataTrack,
         localTracks,
         isConnecting,
         onError: onErrorCallback,

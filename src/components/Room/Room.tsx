@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback, useContext } from 'react';
 import ParticipantStrip from '../ParticipantStrip/ParticipantStrip';
+import Chat from '../Chat/Chat';
 import { styled } from '@material-ui/core/styles';
 import MainParticipant from '../MainParticipant/MainParticipant';
 import { Tabs, Input, Button } from 'antd';
@@ -107,14 +108,14 @@ const Text = () => {
 };
 interface ResumeDrawerProps {
   candidateData: CandidateData | null;
-  userName: string | null;
+  userName: string;
   visible: boolean;
   setVisible: (visible: boolean) => void;
 }
 
 interface DocumentsProps {
   candidateData: CandidateData;
-  userName: string | null;
+  userName: string;
 }
 interface CandidateData {
   files: File[];
@@ -126,23 +127,28 @@ interface File {
   uid: string;
 }
 
-const Documents = ({ candidateData, userName }: DocumentsProps) => (
-  <Tabs defaultActiveKey="0">
-    {userName && userName.toLowerCase() === 'steven gates' && (
-      <TabPane tab="Notes" key="0">
-        <TextArea
-          placeholder="Enter notes about the interview. This will be saved along with the recording after the interview."
-          rows={8}
-        />
+const Documents = ({ candidateData, userName }: DocumentsProps) => {
+  return (
+    <Tabs defaultActiveKey="0">
+      {userName && userName.toLowerCase() === 'steven gates' && (
+        <TabPane tab="Notes" key="0">
+          <TextArea
+            placeholder="Enter notes about the interview. This will be saved along with the recording after the interview."
+            rows={8}
+          />
+        </TabPane>
+      )}
+      <TabPane tab="Chat" key="0">
+        <Chat name={userName} />
       </TabPane>
-    )}
-    {candidateData.files.map((file: File, i: number) => (
-      <TabPane tab={file.name} key={i.toLocaleString() + 1}>
-        <ShowFile url={`https://a.deephire.com/v1/candidates/${candidateData.email}/documents/${file.uid}`} />
-      </TabPane>
-    ))}
-  </Tabs>
-);
+      {candidateData.files.map((file: File, i: number) => (
+        <TabPane tab={file.name} key={i.toLocaleString() + 1}>
+          <ShowFile url={`https://a.deephire.com/v1/candidates/${candidateData.email}/documents/${file.uid}`} />
+        </TabPane>
+      ))}
+    </Tabs>
+  );
+};
 
 const ShowFile = ({ url }: any) => <IframeGoogleDoc url={url} />;
 

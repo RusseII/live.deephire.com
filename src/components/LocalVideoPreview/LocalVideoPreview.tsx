@@ -63,10 +63,10 @@ export default function LocalVideoPreview() {
     }
   }, [URLRoomName, URLUserName, connect, getToken, roomName, setUserName]);
 
-  useEffect(() => {
-    setUserName('SKIP INTRO SCREEN');
-    getToken('SKIP INTRO SCREEN', roomName).then(token => connect(token));
-  }, []);
+  // useEffect(() => {
+  //   setUserName('SKIP INTRO SCREEN');
+  //   getToken('SKIP INTRO SCREEN', roomName).then(token => connect(token));
+  // }, []);
 
   const handleSubmit = async (values: any) => {
     console.log(values, 'values');
