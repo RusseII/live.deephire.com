@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState, useCallback, useContext } from 'react';
 import ParticipantStrip from '../ParticipantStrip/ParticipantStrip';
-import Chat from '../Chat/Chat';
 import { styled } from '@material-ui/core/styles';
 import styledComponent from 'styled-components';
 import MainParticipant from '../MainParticipant/MainParticipant';
-import { Tabs, Input, Button, PageHeader, Row, Col } from 'antd';
+import { Tabs } from 'antd';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import Controls from '../Controls/Controls';
@@ -25,7 +24,6 @@ height: 100%;
 `;
 
 const { TabPane } = Tabs;
-const { TextArea } = Input;
 
 export default function Room() {
   const globalData = useContext(GlobalContext);
@@ -100,12 +98,6 @@ export default function Room() {
     });
   }, [URLRoomName, userName]);
 
-  // const [sidebarVisible, setSidebarVisible] = useState(
-  //   // !!(!isMobile && candidateData && candidateData.files && candidateData.files[0])
-  //   '0'
-  // );
-
-  // console.log(sidebarVisible)
   return (
     <Container>
       <ParticipantStrip />
@@ -113,8 +105,6 @@ export default function Room() {
         <div>
           <MainParticipant />
         </div>
-
-        {/* <Col> */}
         <div>{/* <Text></Text> */}</div>
       </VideoPlusComments>
       <div>{candidateData && <Documents candidateData={candidateData} userName={userName} />}</div>
@@ -123,18 +113,18 @@ export default function Room() {
   );
 }
 
-const Text = () => {
-  const [value, setValue] = useState('');
+// const Text = () => {
+//   const [value, setValue] = useState('');
 
-  return (
-    <ReactQuill
-      placeholder="Enter your notes here. Your notes will automatically stored in your DeepHire account after the interview."
-      theme="snow"
-      value={value}
-      onChange={setValue}
-    />
-  );
-};
+//   return (
+//     <ReactQuill
+//       placeholder="Enter your notes here. Your notes will automatically stored in your DeepHire account after the interview."
+//       theme="snow"
+//       value={value}
+//       onChange={setValue}
+//     />
+//   );
+// };
 interface ResumeDrawerProps {
   candidateData: CandidateData | null;
   userName: string;
@@ -160,17 +150,6 @@ const Documents = ({ candidateData, userName }: DocumentsProps) => {
   return (
     <div style={{ padding: 24, height: '100%' }}>
       <StyledTabs>
-        {/* {userName && userName.toLowerCase() === 'steven gates' && (
-        <TabPane tab="Notes" key="0">
-          <TextArea
-            placeholder="Enter notes about the interview. This will be saved along with the recording after the interview."
-            rows={8}
-          />
-        </TabPane>
-      )} */}
-        {/* <TabPane tab="Chat" key="0">
-        <Chat name={userName} />
-      </TabPane> */}
         {candidateData.files.map((file: File, i: number) => (
           <TabPane style={{ height: '100%' }} tab={file.name} key={(i + 1).toLocaleString()}>
             {console.log('key', i + 1)}
