@@ -11,6 +11,8 @@ import {
   RemoteDataTrack,
 } from 'twilio-video';
 
+import { Typography } from 'antd';
+
 import AudioLevelIndicator from '../AudioLevelIndicator/AudioLevelIndicator';
 import BandwidthWarning from '../BandwidthWarning/BandwidthWarning';
 import NetworkQualityLevel from '../NewtorkQualityLevel/NetworkQualityLevel';
@@ -141,7 +143,23 @@ export default function ParticipantInfo({ participant, onClick, isSelected, chil
         </div>
       </div>
       {isVideoSwitchedOff && <BandwidthWarning />}
-      {children}
+      {isVideoEnabled ? children : <NoVideoText text="No video" />}
     </div>
   );
 }
+
+const NoVideoText = ({ text }: { text: string }) => (
+  <div
+    style={{
+      position: 'absolute',
+      height: '100%',
+      width: '100%',
+      top: 0,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}
+  >
+    <Typography.Text style={{ color: 'white', zIndex: 1, fontSize: 16 }}>{text}</Typography.Text>
+  </div>
+);

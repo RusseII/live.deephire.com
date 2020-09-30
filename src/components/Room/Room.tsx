@@ -2,10 +2,12 @@ import React, { useEffect, useRef, useState, useCallback, useContext } from 'rea
 import ParticipantStrip from '../ParticipantStrip/ParticipantStrip';
 import Chat from '../Chat/Chat';
 import { styled } from '@material-ui/core/styles';
+import styledComponent from 'styled-components';
 import MainParticipant from '../MainParticipant/MainParticipant';
-import { Tabs, Input, Button } from 'antd';
+import { Tabs, Input, Button, PageHeader, Row, Col } from 'antd';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import Controls from '../Controls/Controls';
 
 import { useParams } from 'react-router-dom';
 import { GlobalContext } from '../../ContextWrapper';
@@ -15,6 +17,13 @@ import { putDeviceInfo } from '../../api';
 
 const DetectRTC = require('detectrtc');
 
+const StyledTabs = styledComponent(Tabs)`
+height: 100%;
+.ant-tabs-content {
+  height: 100%;
+}
+`;
+
 const { TabPane } = Tabs;
 const { TextArea } = Input;
 
@@ -22,18 +31,18 @@ export default function Room() {
   const globalData = useContext(GlobalContext);
   const { candidateData, userName } = globalData;
 
-  let { URLRoomName } = useParams();
+  const { URLRoomName } = useParams();
 
   const Container = styled('div')(({ theme }) => ({
     position: 'relative',
     height: '100%',
     width: '100%',
     display: 'grid',
-    gridGap: '16px',
-    gridTemplateColumns: `${theme.sidebarWidth}px 1fr ${sidebarVisible ? '40vw' : '0px'}`,
+    gridGap: '0 16px',
+    gridTemplateColumns: `${theme.sidebarWidth}px 1fr 40vw`,
 
-    gridTemplateAreas: '". participantList ."',
-    gridTemplateRows: '1fr',
+    gridTemplateAreas: '". participantList ." "menuBar menuBar menuBar"',
+    gridTemplateRows: '1fr 100px',
     [theme.breakpoints.down('xs')]: {
       gridTemplateAreas: '"participantList" "."',
       gridTemplateColumns: `auto`,
@@ -42,7 +51,16 @@ export default function Room() {
     },
   }));
 
+  const VideoPlusComments = styled('div')(({ theme }) => ({
+    position: 'relative',
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+  }));
+
   useEffect(() => {
+    (window as any).$crisp.push(['do', 'chat:hide']);
     DetectRTC.load(() => {
       const {
         browser,
@@ -82,21 +100,25 @@ export default function Room() {
     });
   }, [URLRoomName, userName]);
 
-  const [sidebarVisible, setSidebarVisible] = useState(
-    !!(!isMobile && candidateData && candidateData.files && candidateData.files[0])
-  );
+  // const [sidebarVisible, setSidebarVisible] = useState(
+  //   // !!(!isMobile && candidateData && candidateData.files && candidateData.files[0])
+  //   '0'
+  // );
 
+  // console.log(sidebarVisible)
   return (
     <Container>
       <ParticipantStrip />
-      <div style={{ marginBottom: 24 }}>
-        <MainParticipant />
-        <Button onClick={() => setSidebarVisible(flag => !flag)}>Toggle Sidebar</Button>
+      <VideoPlusComments>
+        <div>
+          <MainParticipant />
+        </div>
 
-        <Text></Text>
-      </div>
+        {/* <Col> */}
+        <div>{/* <Text></Text> */}</div>
+      </VideoPlusComments>
       <div>{candidateData && <Documents candidateData={candidateData} userName={userName} />}</div>
-      <div></div>
+      <Controls />
     </Container>
   );
 }
@@ -104,7 +126,14 @@ export default function Room() {
 const Text = () => {
   const [value, setValue] = useState('');
 
-  return <ReactQuill theme="snow" value={value} style={{ height: '100%' }} onChange={setValue} />;
+  return (
+    <ReactQuill
+      placeholder="Enter your notes here. Your notes will automatically stored in your DeepHire account after the interview."
+      theme="snow"
+      value={value}
+      onChange={setValue}
+    />
+  );
 };
 interface ResumeDrawerProps {
   candidateData: CandidateData | null;
@@ -129,24 +158,27 @@ interface File {
 
 const Documents = ({ candidateData, userName }: DocumentsProps) => {
   return (
-    <Tabs defaultActiveKey="0">
-      {userName && userName.toLowerCase() === 'steven gates' && (
+    <div style={{ padding: 24, height: '100%' }}>
+      <StyledTabs>
+        {/* {userName && userName.toLowerCase() === 'steven gates' && (
         <TabPane tab="Notes" key="0">
           <TextArea
             placeholder="Enter notes about the interview. This will be saved along with the recording after the interview."
             rows={8}
           />
         </TabPane>
-      )}
-      <TabPane tab="Chat" key="0">
+      )} */}
+        {/* <TabPane tab="Chat" key="0">
         <Chat name={userName} />
-      </TabPane>
-      {candidateData.files.map((file: File, i: number) => (
-        <TabPane tab={file.name} key={i.toLocaleString() + 1}>
-          <ShowFile url={`https://a.deephire.com/v1/candidates/${candidateData.email}/documents/${file.uid}`} />
-        </TabPane>
-      ))}
-    </Tabs>
+      </TabPane> */}
+        {candidateData.files.map((file: File, i: number) => (
+          <TabPane style={{ height: '100%' }} tab={file.name} key={(i + 1).toLocaleString()}>
+            {console.log('key', i + 1)}
+            <ShowFile url={`https://a.deephire.com/v1/candidates/${candidateData.email}/documents/${file.uid}`} />
+          </TabPane>
+        ))}
+      </StyledTabs>
+    </div>
   );
 };
 
@@ -185,7 +217,7 @@ export function IframeGoogleDoc({ url }: IframeGoogleDocsProps) {
       onLoad={iframeLoaded}
       onError={updateIframeSrc}
       ref={iframeRef}
-      style={{ width: '100%', height: 'calc(100vh - (48px + 64px + 46px))' }}
+      style={{ width: '100%', height: '100%' }}
       src={getIframeLink()}
     />
   );

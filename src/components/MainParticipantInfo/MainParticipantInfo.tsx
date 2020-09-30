@@ -8,35 +8,36 @@ import useIsTrackSwitchedOff from '../../hooks/useIsTrackSwitchedOff/useIsTrackS
 import usePublications from '../../hooks/usePublications/usePublications';
 import useTrack from '../../hooks/useTrack/useTrack';
 import VideocamOff from '@material-ui/icons/VideocamOff';
+import { NoVideo } from '../LocalVideoPreview/LocalVideoPreview';
 
 const useStyles = makeStyles({
   container: {
-    // position: 'relative',
-    // display: 'flex',
-    // alignItems: 'center',
-    // gridArea: 'participantList',
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    gridArea: 'participantList',
   },
   isVideoSwitchedOff: {
-    // '& video': {
-    //   filter: 'blur(4px) grayscale(1) brightness(0.5)',
-    // },
+    '& video': {
+      filter: 'blur(4px) grayscale(1) brightness(0.5)',
+    },
   },
   identity: {
-    // background: 'rgba(255, 255, 255, 0.7)',
-    // padding: '0.1em 0.3em',
+    background: 'rgba(255, 255, 255, 0.7)',
+    padding: '0.1em 0.3em',
     // margin: '1em',
-    // fontSize: '1.2em',
-    // display: 'inline-flex',
-    // '& svg': {
-    //   marginLeft: '0.3em',
-    // },
+    fontSize: '1.2em',
+    display: 'inline-flex',
+    '& svg': {
+      marginLeft: '0.3em',
+    },
   },
   infoContainer: {
-    //   position: 'absolute',
-    //   zIndex: 1,
-    //   height: '100%',
-    //   padding: '0.4em',
-    //   width: '100%',
+    position: 'absolute',
+    zIndex: 1,
+    height: '100%',
+    padding: '0.4em',
+    width: '100%',
   },
 });
 
@@ -47,7 +48,6 @@ interface MainParticipantInfoProps {
 
 export default function MainParticipantInfo({ participant, children }: MainParticipantInfoProps) {
   const classes = useStyles();
-
   const publications = usePublications(participant);
   const videoPublication = publications.find(p => p.trackName.includes('camera'));
   const screenSharePublication = publications.find(p => p.trackName.includes('screen'));
@@ -68,7 +68,7 @@ export default function MainParticipantInfo({ participant, children }: MainParti
         </h4>
       </div>
       {isVideoSwitchedOff && <BandwidthWarning />}
-      {children}
+      {isVideoEnabled ? children : <NoVideo text="No video for this participant" />}
     </div>
   );
 }

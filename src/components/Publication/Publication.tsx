@@ -22,8 +22,9 @@ interface PublicationProps {
 
 export default function Publication({ publication, isLocal, disableAudio, videoPriority }: PublicationProps) {
   const track = useTrack(publication);
-
+  console.log('render track in publication');
   if (!track) return null;
+  console.log(track.kind);
 
   switch (track.kind) {
     case 'video':

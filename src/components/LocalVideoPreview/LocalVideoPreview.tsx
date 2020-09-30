@@ -186,7 +186,7 @@ export default function LocalVideoPreview() {
       <Row gutter={24} align="middle" className={classes.preview}>
         <Col xs={2} sm={2} md={2} lg={4}></Col>
         <Col xs={20} sm={20} md={11} lg={9}>
-          {track ? <VideoTrack track={track} isLocal /> : <NoVideo />}
+          {track ? <VideoTrack track={track} isLocal /> : <NoVideo text="Camera is off" />}
         </Col>
         {!isMobile && <JoinPart />}
       </Row>
@@ -203,7 +203,7 @@ export default function LocalVideoPreview() {
 //   </div>)
 // }
 
-const NoVideo = () => (
+export const NoVideo = ({ text }: { text: string }) => (
   <div style={{ width: '100%', position: 'relative', display: 'inline-block' }}>
     <div style={{ backgroundColor: 'black', paddingTop: '56.25%', display: 'block', color: 'white' }}>
       <div
@@ -217,7 +217,7 @@ const NoVideo = () => (
           alignItems: 'center',
         }}
       >
-        <Typography.Text style={{ color: 'white', fontSize: 24 }}>Camera is off</Typography.Text>
+        <Typography.Text style={{ color: 'white', fontSize: 24 }}>{text}</Typography.Text>
       </div>
     </div>
   </div>

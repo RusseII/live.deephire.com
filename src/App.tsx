@@ -2,7 +2,7 @@ import React from 'react';
 import { styled } from '@material-ui/core/styles';
 import * as Sentry from '@sentry/browser';
 
-import Controls from './components/Controls/Controls';
+// import Controls from './components/Controls/Controls';
 import LocalVideoPreview from './components/LocalVideoPreview/LocalVideoPreview';
 import MenuBar from './components/MenuBar/MenuBar';
 import ReconnectingNotification from './components/ReconnectingNotification/ReconnectingNotification';
@@ -44,10 +44,8 @@ const Data = React.memo((props: { roomState: string }) => {
   return (
     <>
       <MenuBar />
-      <Main>
-        {props.roomState === 'disconnected' ? <LocalVideoPreview /> : <Room />}
-        <Controls />
-      </Main>
+      <Main>{props.roomState === 'disconnected' ? <LocalVideoPreview /> : <Room />}</Main>
+      {/* <Controls /> */}
       <ReconnectingNotification />
     </>
   );
